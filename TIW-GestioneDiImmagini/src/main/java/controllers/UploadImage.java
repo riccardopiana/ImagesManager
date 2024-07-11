@@ -6,8 +6,8 @@ import java.io.InputStream;
 import java.nio.file.Files;
 import java.nio.file.Paths;
 import java.sql.Connection;
+import java.sql.SQLException;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.MultipartConfig;
 import javax.servlet.annotation.WebServlet;
@@ -18,9 +18,6 @@ import javax.servlet.http.HttpSession;
 import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringEscapeUtils;
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
 
 import beans.User;
 import dao.*;
@@ -31,22 +28,21 @@ import utils.ConnectionHandler;
 public class UploadImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-
 	String folderPath = "";
 
 	public void init() throws ServletException {
 		folderPath = getServletContext().getInitParameter("uploadLocation");
 		connection = ConnectionHandler.getConnection(getServletContext());
-		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		if (session.isNew() || session.getAttribute("user") == null) {
+			String loginpath = getServletContext().getContextPath() + "/index.html";
+			response.sendRedirect(loginpath);
+			return;
+		}
+		
 		Part filePart = null;
 		String title = null;
 		String description = null;
@@ -77,24 +73,16 @@ public class UploadImage extends HttpServlet {
 		File file = new File(outputPath);
 
 		try (InputStream fileContent = filePart.getInputStream()) {
-			// TODO: WHAT HAPPENS IF A FILE WITH THE SAME NAME ALREADY EXISTS?
-			// you could override it, send an error or 
-			// rename it, for example, if I need to upload images to an album, and for each image I also save other data, I could save the image as {image_id}.jpg using the id of the db
-			
 			Files.copy(fileContent, file.toPath());
-			
-			String loginpath = getServletContext().getContextPath()+ "/index.html";
-			HttpSession session = request.getSession();
-			if (session.isNew() || session.getAttribute("user") == null) {
-				response.sendRedirect(loginpath);
+
+			User user = (User) session.getAttribute("user");
+			ImageDAO imageDAO = new ImageDAO(connection);
+			try {
+				imageDAO.addImage(title, description, outputPath, user.getEmail());
+			} catch (SQLException e) {
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to upload image");
 				return;
 			}
-			
-			User user = (User) session.getAttribute("user");
-			
-			ImageDAO imageDAO = new ImageDAO(connection);
-			imageDAO.addImage(title, description, outputPath, user.getEmail());
-			
 			request.getSession().setAttribute("user", user);
 			response.sendRedirect(getServletContext().getContextPath() + "/GoToHome");
 		} catch (Exception e) {
