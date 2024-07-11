@@ -1,0 +1,28 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Login page</title>
+</head>
+<body>
+	<h1>Welcome to the image management application</h1>
+
+	<form action="CheckLogin" method="POST">
+		Email: <input type="text" name="email" required> <br>
+		Password: <input type="password" name="password" required><br>
+		<input type="submit" value="login">
+		<p th:text=" ${errorMsg1}"></p>
+	</form>
+	
+	<form action="CheckRegistration" method="POST">
+		Name: <input type="text" name="name" required> <br>
+		Surname: <input type="text" name="surname" required> <br>
+		Email: <input type="text" name="email" required> <br>
+		Password: <input type="password" name="password" required><br>
+		RipPassword: <input type="password" name="ripPassword" required><br>
+		<input type="submit" value="login">
+		<p th:text=" ${errorMsg2}"></p>
+	</form>
+
+</body>
+</html>
