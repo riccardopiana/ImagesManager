@@ -4,6 +4,7 @@ import java.sql.Connection;
 import java.sql.PreparedStatement;
 import java.sql.ResultSet;
 import java.sql.SQLException;
+import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -16,12 +17,35 @@ public class AlbumDAO {
 		this.connection = connection;
 	}
 	
-	public void createAlbum(String title, String userEmail) throws SQLException {
-		String query = "INSERT into Album (Title, Creator) VALUES (?, ?)";
-		try (PreparedStatement pstatment = connection.prepareStatement(query);) {
-			pstatment.setString(1, title);
-			pstatment.setString(2, userEmail);
-			pstatment.executeUpdate();
+	public void createAlbum(String title, String userEmail, int[] imageIds) throws SQLException {
+		try {
+			connection.setAutoCommit(false);
+			String query = "";
+			
+			query = "INSERT into Album (Title, Creator) VALUES (?, ?)";
+			try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+				pstatement.setString(1, title);
+				pstatement.setString(2, userEmail);
+				pstatement.executeUpdate();
+			}
+			Statement statement = connection.createStatement();
+			
+			query = "SET @last_album_id = LAST_INSERT_ID()";
+			statement.executeUpdate(query);
+			
+			query = "INSERT ImageOfAlbum (Album, Image) VALUES ";
+			for (int imageId : imageIds) {
+				query += "(@last_album_id, " + imageId + "), ";
+			}
+			query = query.substring(0, query.length()-2);
+			statement.executeUpdate(query);
+			
+			connection.commit();
+		} catch (SQLException e) {
+			connection.rollback();
+			throw new SQLException();
+		} finally {
+			connection.setAutoCommit(true);
 		}
 	}
 	

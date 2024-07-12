@@ -59,9 +59,7 @@
 		<p>Complete the form to create a album</p>
 		<form action="#" th:action="@{/CreateAlbum}" method="POST">
 			<fieldset>
-				<p>
-					Title: <input type="text" name="title" required />
-				</p>
+				<p>Title: <input type="text" name="title" required /></p>
 				<table th:remove="all-but-first">
 					<tr th:each="image : ${userImages}">
 						<td><input type="checkbox" name="checkedImageIds" th:value="${image.id}"></td>
@@ -71,10 +69,10 @@
 						<td><input type="checkbox"></td>
 						<td>Sea</td>
 					</tr>
-				</table>
-				<input type="submit" name="Create Album">
+				</table><br>
+				<input type="submit" value="Create Album">
+				<p th:text=" ${createalbummsg}"></p>
 			</fieldset>
-			<p th:text=" ${createalbummsg}"></p>
 		</form>
 	</div>
 	
@@ -82,12 +80,10 @@
 		<p>Complete the form to upload a image</p>
 			<form action="UploadImage" method="post" enctype="multipart/form-data">
 				<fieldset>
-					<p>
-    					<input type="file" name="file" required><br>
-    				</p>
-    				Title: <input type="text" name="title" required> <br>
-					Description: <input type="text" name="description"> <br>
-    				<input type="submit" name="Upload Image">
+					<p><input type="file" name="file" required><br></p>
+    				Title: <input type="text" name="title" required> <br><br>
+					Description: <input type="text" name="description"> <br><br>
+    				<input type="submit" value="Upload Image">
     				<p th:text=" ${uploadmsg}"></p>
     			</fieldset>
 			</form>

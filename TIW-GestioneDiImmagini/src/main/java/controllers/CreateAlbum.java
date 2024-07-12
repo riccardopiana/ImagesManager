@@ -48,25 +48,14 @@ public class CreateAlbum extends HttpServlet {
 		}
 		
 		User user = (User) session.getAttribute("user");
-		ImageDAO imageDAO = new ImageDAO(connection);
 		AlbumDAO albumDAO = new AlbumDAO(connection);
 		
-		//TODO
-		/*Album newAlbum = null;
 		try {
-			albumDAO.createAlbum(title, user.getEmail());
+			albumDAO.createAlbum(title, user.getEmail(), imageIds);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create Album");
 			return;
 		}
-		for (int id : imageIds) {
-			try {
-				imageDAO.addToAlbum(id, newAlbum.getId());
-			} catch (SQLException e) {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to create Album");
-				return;
-			}
-		}*/
 		
 		request.getSession().setAttribute("user", user);
 		response.sendRedirect(getServletContext().getContextPath() + "/GoToHome");

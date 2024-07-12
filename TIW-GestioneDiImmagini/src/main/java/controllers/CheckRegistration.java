@@ -74,7 +74,7 @@ public class CheckRegistration extends HttpServlet {
 		if (user != null) {
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("errorMsg", "User already exist");
+			ctx.setVariable("registrationMsg", "User already exist");
 			path = "/index.html";
 			templateEngine.process(path, ctx, response.getWriter());
 		} else {
@@ -94,7 +94,7 @@ public class CheckRegistration extends HttpServlet {
 			}
 			ServletContext servletContext = getServletContext();
 			final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-			ctx.setVariable("errorMsg2", message);
+			ctx.setVariable("registrationMsg", message);
 			path = "/index.html";
 			templateEngine.process(path, ctx, response.getWriter());
 			}

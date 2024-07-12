@@ -47,13 +47,4 @@ public class ImageDAO {
 			pstatment.executeUpdate();
 		}
 	}
-
-	public void addToAlbum(int imageId, int albumId) throws SQLException{
-		String query = "INSERT into ImageOfAlbum VALUES (?, ?)";
-		try (PreparedStatement pstatment = connection.prepareStatement(query);) {
-			pstatment.setInt(1, albumId);
-			pstatment.setInt(2, imageId);
-		}
-	}
-
 }
