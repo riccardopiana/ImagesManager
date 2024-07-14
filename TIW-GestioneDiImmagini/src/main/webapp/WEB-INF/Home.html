@@ -3,6 +3,8 @@
 <head>
 <meta charset="ISO-8859-1">
 <title>Home</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
 </head>
 <body>
 <div align="right">
@@ -26,12 +28,14 @@
 					<td th:text="${album.title}"></td>
 					<td th:text="${album.creator}"></td>
 					<td th:text="${album.creationDate}">
-					<td><a th:href="@{/GoToAlbum(albumid=${album.id})}">Details</a></td>
+					<td><a th:href="@{/GoToAlbum(albumId=${album.id})}">Details</a></td>
 				</tr>
 			</tbody>
 		</table>
 	</div>  
 	<div th:if="${userAlbums.size() == 0}"> You didn't create any album.</div>
+	
+	<br>
 	
 	<div th:if="${otherAlbums.size() >0}">
 		<table>
@@ -48,15 +52,17 @@
 					<td th:text="${album.title}"></td>
 					<td th:text="${album.creator}"></td>
 					<td th:text="${album.creationDate}">
-					<td><a th:href="@{/GoToAlbum(albumid=${album.id})}">Details</a></td>
+					<td><a th:href="@{/GoToAlbum(albumId=${album.id})}">Details</a></td>
 				</tr>
 			</tbody>
 		</table>
 	</div>  
 	<div th:if="${userAlbums.size() == 0}"> No album were created by other users.</div>
-
+	
+	<br>
+	
 	<div>
-		<p>Complete the form to create a album</p>
+		<p>Complete the form to create a album:</p>
 		<form action="#" th:action="@{/CreateAlbum}" method="POST">
 			<fieldset>
 				<p>Title: <input type="text" name="title" required /></p>
@@ -76,8 +82,10 @@
 		</form>
 	</div>
 	
+	<br>
+	
 	<div>
-		<p>Complete the form to upload a image</p>
+		<p>Complete the form to upload a image:</p>
 			<form action="UploadImage" method="post" enctype="multipart/form-data">
 				<fieldset>
 					<p><input type="file" name="file" required><br></p>

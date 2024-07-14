@@ -1,41 +1,112 @@
 package controllers;
 
 import java.io.IOException;
+import java.sql.Connection;
+import java.sql.SQLException;
+import java.util.ArrayList;
+import java.util.List;
+
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
+import javax.servlet.http.HttpSession;
 
-/**
- * Servlet implementation class GoToAlbum
- */
+import org.thymeleaf.TemplateEngine;
+import org.thymeleaf.context.WebContext;
+import org.thymeleaf.templatemode.TemplateMode;
+import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
+
+import dao.*;
+import utils.ConnectionHandler;
+import beans.*;
+
 @WebServlet("/GoToAlbum")
 public class GoToAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
+	private Connection connection = null;
+	private TemplateEngine templateEngine;
        
-    /**
-     * @see HttpServlet#HttpServlet()
-     */
     public GoToAlbum() {
         super();
-        // TODO Auto-generated constructor stub
     }
-
-	/**
-	 * @see HttpServlet#doGet(HttpServletRequest request, HttpServletResponse response)
-	 */
+    
+    public void init() throws ServletException {
+		ServletContext servletContext = getServletContext();
+		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
+		templateResolver.setTemplateMode(TemplateMode.HTML);
+		this.templateEngine = new TemplateEngine();
+		this.templateEngine.setTemplateResolver(templateResolver);
+		templateResolver.setSuffix(".html");
+		connection = ConnectionHandler.getConnection(getServletContext());
+	}
+    
+	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
-		response.getWriter().append("Served at: ").append(request.getContextPath());
+		String loginpath = getServletContext().getContextPath() + "/index.html";
+		HttpSession session = request.getSession();
+		if (session.isNew() || session.getAttribute("user") == null) {
+			response.sendRedirect(loginpath);
+			return;
+		}
+		
+		Integer albumId = null;
+		try {
+			albumId = Integer.parseInt(request.getParameter("albumId"));
+		} catch (NumberFormatException | NullPointerException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 0");
+			return;
+		}
+		
+		AlbumDAO albumDAO = new AlbumDAO(connection);
+		ImageDAO imageDAO = new ImageDAO(connection);
+		Album album = new Album();
+		List<Image> images = new ArrayList<Image>();
+		
+		try {
+			album = albumDAO.findById(albumId);
+			if (album == null) {
+				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Album not found");
+				return;
+			}
+			Album currentAlbum = (Album) session.getAttribute("album");
+			if (currentAlbum == null) {
+				session.setAttribute("album", album);
+				images = imageDAO.findFirstFiveImages(albumId);
+				session.setAttribute("images", images);
+			} else if (album.getId() != currentAlbum.getId()) {
+				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 1");
+				return;
+			} else {
+				images = (List<Image>) session.getAttribute("images");
+			}
+		} catch (SQLException e) {
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover album 2");
+			return;
+		}
+		
+		String path = "/WEB-INF/AlbumPage.html";
+		ServletContext servletContext = getServletContext();
+		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
+		ctx.setVariable("album", album);
+		ctx.setVariable("creationDate", album.getCreationDate().toString());
+		ctx.setVariable("images", images);
+		templateEngine.process(path, ctx, response.getWriter());
 	}
 
-	/**
-	 * @see HttpServlet#doPost(HttpServletRequest request, HttpServletResponse response)
-	 */
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		// TODO Auto-generated method stub
 		doGet(request, response);
+	}
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
 	}
 
 }

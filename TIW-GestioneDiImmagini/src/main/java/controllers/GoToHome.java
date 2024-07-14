@@ -50,6 +50,10 @@ public class GoToHome extends HttpServlet {
 			response.sendRedirect(loginpath);
 			return;
 		}
+		if (session.getAttribute("album") != null) {
+			session.setAttribute("album", null);
+			session.setAttribute("images", null);
+		}
 		
 		User user = (User) session.getAttribute("user");
 		AlbumDAO albumDAO = new AlbumDAO(connection);
