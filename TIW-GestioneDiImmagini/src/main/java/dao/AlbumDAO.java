@@ -106,4 +106,24 @@ public class AlbumDAO {
 		}
 		return album;
 	}
+
+	public int numImagesAlbum(Integer albumId) throws SQLException{
+		int totalPages = 0;
+		int totalImages = 0;
+		String query = "SELECT * FROM ImageOfAlbum WHERE Album = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setInt(1, albumId);
+			try (ResultSet result = pstatement.executeQuery();) {
+				while (result.next()) {
+					totalImages++;
+				}
+			}
+		}
+		if (totalImages % 5 == 0) {
+			totalPages = totalImages/5;
+		} else {
+			totalPages = (totalImages/5) + 1;
+		}
+		return totalPages;
+	}
 }

@@ -68,14 +68,22 @@ public class ImageDAO {
 		}
 	}
 
-	public List<Image> findFirstFiveImages(Integer albumId) throws SQLException {
+	public List<Image> findFiveImages(Integer albumId, int page) throws SQLException {
 		List<Image> images = new ArrayList<Image>();
 		int count = 0;
 		String query = "SELECT * FROM ImageOfAlbum WHERE Album = ?";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setLong(1, albumId);
 			try (ResultSet result = pstatement.executeQuery();) {
-				while (result.next() && count < 5) {
+				while (count < page - 1) {
+					result.next();
+					result.next();
+					result.next();
+					result.next();
+					result.next();
+					count++;
+				}
+				while (result.next() && count < page + 4) {
 					Image image = this.findById(result.getInt("image"));
 					images.add(image);
 					count++;

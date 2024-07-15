@@ -2,28 +2,6 @@ table, th, tr {
 	border: 1px solid black;
 }
 
-.thumb-container {
-	width: 300%;
-	height: 180%;
-	overflow: hidden;
-	padding: 5 px;
-	border: 1px solid  black;
-	border-radius: 8px;
-	margin: 20 px;
-}
-
-.thumb-image {
-	width: 100%;
-	height: 100%;
-	object-fit: cover;
-	border-radius: 5px;
-}
-
-.thumb-image hover {
-	scale: 1.02;
-	cursor: pointer;
-}
-
-.thumb-container hover {
-	box-shadow: 0 0 2px 1px rgba(0, 140, 186, 0.5);
+td {
+	text-align: center;
 }

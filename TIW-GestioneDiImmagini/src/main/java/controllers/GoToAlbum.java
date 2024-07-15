@@ -43,7 +43,6 @@ public class GoToAlbum extends HttpServlet {
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
     
-	@SuppressWarnings("unchecked")
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		String loginpath = getServletContext().getContextPath() + "/index.html";
 		HttpSession session = request.getSession();
@@ -56,14 +55,25 @@ public class GoToAlbum extends HttpServlet {
 		try {
 			albumId = Integer.parseInt(request.getParameter("albumId"));
 		} catch (NumberFormatException | NullPointerException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 0");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect albumId");
 			return;
+		}
+		
+		int page = 1;
+		if (request.getParameter("page") != null) {
+			try {
+	            page = Integer.parseInt(request.getParameter("page"));
+	        } catch (NumberFormatException | NullPointerException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect page value");
+			return;
+	        }
 		}
 		
 		AlbumDAO albumDAO = new AlbumDAO(connection);
 		ImageDAO imageDAO = new ImageDAO(connection);
 		Album album = new Album();
 		List<Image> images = new ArrayList<Image>();
+		int totalPages = 0;
 		
 		try {
 			album = albumDAO.findById(albumId);
@@ -72,15 +82,13 @@ public class GoToAlbum extends HttpServlet {
 				return;
 			}
 			Album currentAlbum = (Album) session.getAttribute("album");
-			if (currentAlbum == null) {
-				session.setAttribute("album", album);
-				images = imageDAO.findFirstFiveImages(albumId);
-				session.setAttribute("images", images);
-			} else if (album.getId() != currentAlbum.getId()) {
+			if (currentAlbum != null && album.getId() != currentAlbum.getId()) {
 				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 1");
 				return;
 			} else {
-				images = (List<Image>) session.getAttribute("images");
+				session.setAttribute("album", album);
+				images = imageDAO.findFiveImages(albumId, page);
+				totalPages = albumDAO.numImagesAlbum(albumId);
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
@@ -94,6 +102,8 @@ public class GoToAlbum extends HttpServlet {
 		ctx.setVariable("album", album);
 		ctx.setVariable("creationDate", album.getCreationDate().toString());
 		ctx.setVariable("images", images);
+		ctx.setVariable("currentPage", page);
+		ctx.setVariable("totalPages", totalPages);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 
@@ -108,5 +118,4 @@ public class GoToAlbum extends HttpServlet {
 			e.printStackTrace();
 		}
 	}
-
 }

@@ -1,44 +1,80 @@
 <!DOCTYPE html>
 <html xmlns:th="http://www.thymeleaf.org">
 <head>
-<meta charset="ISO-8859-1">
-<title>Album</title>
-<link rel="stylesheet" type="text/css" media="all"
-	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+    <meta charset="ISO-8859-1">
+    <title>Album</title>
+    <link rel="stylesheet" type="text/css" media="all" href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+    <style>
+        .container {
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            flex-direction: column;
+        }
+        .navigation {
+            display: flex;
+            justify-content: space-between;
+            width: 100%;
+            max-width: 800px;
+            margin-top: 10px;
+        }
+        .navigation button {
+            height: 30px;
+        }
+        .table-container {
+            display: flex;
+            justify-content: center;
+            width: 100%;
+        }
+    </style>
 </head>
 <body>
-<div align="right">
-		<a th:href="@{/Logout}">Logout</a>
-	</div>
-	<h1>Album Page</h1>
-	<a th:href="@{/GoToHome}">Back to home</a>
-	<div>
-		<p th:text=" ${'Title: ' + album.title}"></p>
-		<p th:text=" ${'Creator: ' + album.creator}"></p>
-		<p th:text="${'Creation date: ' + album.creationDate}"></p>
-	</div>
-	<div th:if="${images.size() >0}">
-		<table>
-			<thead>
-				<tr>
-					<th>1</th>
-					<th>2</th>
-					<th>3</th>
-					<th>4</th>
-					<th>5</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr>
-					<td th:text="${images[0].title}"></td>
-					<td th:text="${images[1].title}"></td>
-					<td th:text="${images[2].title}"></td>
-					<td th:text="${images[3].title}"></td>
-					<td th:text="${images[4].title}"></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>  
-	<div th:if="${images.size() == 0}"> This album is empty.</div>
+    <div align="right">
+        <a th:href="@{/Logout}">Logout</a>
+    </div>
+    <h1>Album Page</h1>
+    <a th:href="@{/GoToHome}">Back to home</a>
 
+    <div>
+        <p th:text="'Title: ' + ${album.title}"></p>
+        <p th:text="'Creator: ' + ${album.creator}"></p>
+        <p th:text="'Creation date: ' + ${album.creationDate}"></p>
+    </div>
+
+	<div class="container">
+    <div th:if="${images.size() > 0}">
+        <table>
+            <thead>
+                <tr>
+                    <th th:each="image, iterStat : ${images}" th:text="${image.title}" th:if="${iterStat.index < 5}"></th>
+                </tr>
+            </thead>
+            <tbody>
+                <tr>
+                    <td th:each="image, iterStat : ${images}" th:if="${iterStat.index < 5}">
+                        <a th:href="@{/GoToImage(imageId=${image.id})}">
+                            <img th:src="@{GetImage/{image}(image=${image.path})}" height="100" style="width: auto;">
+                        </a>
+                    </td>
+                </tr>
+            </tbody>
+        </table>
+    </div>
+
+	<div class="navigation">
+    	<div th:if="${currentPage > 1}">
+        	<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage - 1})}">
+            	<button>PRECEDENTI</button>
+                </a>
+    	</div>
+		<div th:if="${currentPage < totalPages}">
+    		<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage + 1})}">
+        		<button>SUCCESSIVE</button>
+    		</a>
+		</div>
+    </div>
+    </div>
+
+    <div th:if="${images.size() == 0}">This album is empty.</div>
 </body>
+</html>

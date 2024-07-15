@@ -78,7 +78,7 @@ public class UploadImage extends HttpServlet {
 			User user = (User) session.getAttribute("user");
 			ImageDAO imageDAO = new ImageDAO(connection);
 			try {
-				imageDAO.addImage(title, description, outputPath, user.getEmail());
+				imageDAO.addImage(title, description, fileName, user.getEmail());
 			} catch (SQLException e) {
 				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to upload image");
 				return;
