@@ -58,7 +58,7 @@ public class GoToImage extends HttpServlet {
 		try {
 			imageId = Integer.parseInt(request.getParameter("imageId"));
 		} catch (NumberFormatException | NullPointerException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 0");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect ImageId");
 			return;
 		}
 		
@@ -85,7 +85,7 @@ public class GoToImage extends HttpServlet {
 			}
 		} catch (SQLException e) {
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover album 2");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover image");
 			return;
 		}
 		

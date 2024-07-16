@@ -4,29 +4,6 @@
     <meta charset="ISO-8859-1">
     <title>Album</title>
     <link rel="stylesheet" type="text/css" media="all" href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
-    <style>
-        .container {
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            flex-direction: column;
-        }
-        .navigation {
-            display: flex;
-            justify-content: space-between;
-            width: 100%;
-            max-width: 800px;
-            margin-top: 10px;
-        }
-        .navigation button {
-            height: 30px;
-        }
-        .table-container {
-            display: flex;
-            justify-content: center;
-            width: 100%;
-        }
-    </style>
 </head>
 <body>
     <div align="right">
@@ -41,38 +18,36 @@
         <p th:text="'Creation date: ' + ${album.creationDate}"></p>
     </div>
 
-	<div class="container">
-    <div th:if="${images.size() > 0}">
-        <table>
-            <thead>
-                <tr>
-                    <th th:each="image, iterStat : ${images}" th:text="${image.title}" th:if="${iterStat.index < 5}"></th>
-                </tr>
-            </thead>
-            <tbody>
-                <tr>
-                    <td th:each="image, iterStat : ${images}" th:if="${iterStat.index < 5}">
-                        <a th:href="@{/GoToImage(imageId=${image.id})}">
-                            <img th:src="@{GetImage/{image}(image=${image.path})}" height="100" style="width: auto;">
-                        </a>
-                    </td>
-                </tr>
-            </tbody>
-        </table>
-    </div>
-
-	<div class="navigation">
-    	<div th:if="${currentPage > 1}">
+	<div class=container>
+		
+    	<div class = item th:if="${currentPage > 1}">
         	<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage - 1})}">
             	<button>PRECEDENTI</button>
-                </a>
-    	</div>
-		<div th:if="${currentPage < totalPages}">
+            </a>
+  	  	</div>
+	
+    	<div class= item th:if="${images.size() > 0}">
+        	<table>
+        	    <tbody>
+            	    <tr>
+                	    <td th:each="image, iterStat : ${images}" th:if="${iterStat.index < 5}">
+                    	    <a th:href="@{/GoToImage(imageId=${image.id})}">
+                        	    <img th:src="@{GetImage/{image}(image=${image.path})}" height="100" style="width: auto;">
+	                        </a>
+	                        <br>
+	                        <span th:text="${image.title}"></span>
+    	                </td>
+    	                <td th:if="${images.size < 5}" th:each="i : ${#numbers.sequence(1, 5 - images.size)}"></td>
+        	        </tr>
+           		</tbody>
+        	</table>
+		</div>
+
+  	  	<div class = item th:if="${currentPage < totalPages}">
     		<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage + 1})}">
         		<button>SUCCESSIVE</button>
     		</a>
 		</div>
-    </div>
     </div>
 
     <div th:if="${images.size() == 0}">This album is empty.</div>

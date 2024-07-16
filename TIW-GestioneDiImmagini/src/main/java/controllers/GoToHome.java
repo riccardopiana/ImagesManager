@@ -65,14 +65,14 @@ public class GoToHome extends HttpServlet {
 		try {
 			userAlbums = albumDAO.findByUser(user.getEmail());
 		}catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover user missions");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover user's albums");
 			return;
 		}
 		
 		try {
 			otherAlbums = albumDAO.findOthers(user.getEmail());
 		}catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover other user missions");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover other's user albums");
 			return;
 		}
 		

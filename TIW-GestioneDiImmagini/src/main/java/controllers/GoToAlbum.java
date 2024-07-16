@@ -81,21 +81,25 @@ public class GoToAlbum extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Album not found");
 				return;
 			}
-			Album currentAlbum = (Album) session.getAttribute("album");
-			if (currentAlbum != null && album.getId() != currentAlbum.getId()) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 1");
-				return;
-			} else {
-				session.setAttribute("album", album);
-				images = imageDAO.findFiveImages(albumId, page);
-				totalPages = albumDAO.numImagesAlbum(albumId);
-			}
 		} catch (SQLException e) {
-			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover album 2");
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover album");
 			return;
 		}
 		
+		try {
+			images = imageDAO.findFiveImages(albumId, page);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover images of album");
+			return;
+		}
+		
+		try {
+			totalPages = albumDAO.numImagesAlbum(albumId);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover number of images");
+			return;
+		}
+				
 		String path = "/WEB-INF/AlbumPage.html";
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());

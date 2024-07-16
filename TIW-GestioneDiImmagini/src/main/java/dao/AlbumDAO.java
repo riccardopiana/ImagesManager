@@ -51,7 +51,7 @@ public class AlbumDAO {
 	
 	public List<Album> findByUser(String userEmail) throws SQLException {
 		List<Album> albums = new ArrayList<Album>();
-		String query = "SELECT * FROM Album WHERE Creator = ?";
+		String query = "SELECT * FROM Album WHERE Creator = ? ORDER BY CreationDate desc";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, userEmail);
 			try (ResultSet result = pstatement.executeQuery();) {
@@ -71,7 +71,7 @@ public class AlbumDAO {
 	
 	public List<Album> findOthers(String userEmail) throws SQLException {
 		List<Album> albums = new ArrayList<Album>();
-		String query = "SELECT * FROM Album WHERE Creator != ?";
+		String query = "SELECT * FROM Album WHERE Creator != ? ORDER BY CreationDate desc";
 		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 			pstatement.setString(1, userEmail);
 			try (ResultSet result = pstatement.executeQuery();) {

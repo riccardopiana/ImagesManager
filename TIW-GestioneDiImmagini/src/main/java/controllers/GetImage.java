@@ -33,7 +33,7 @@ public class GetImage extends HttpServlet {
 		String pathInfo = request.getPathInfo();
 
 		if (pathInfo == null || pathInfo.equals("/")) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file name!");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file name");
 			return;
 		}
 
