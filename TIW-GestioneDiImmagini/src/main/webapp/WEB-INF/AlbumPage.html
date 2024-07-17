@@ -22,7 +22,7 @@
 		
     	<div class = item th:if="${currentPage > 1}">
         	<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage - 1})}">
-            	<button>PRECEDENTI</button>
+            	<button>PREV</button>
             </a>
   	  	</div>
 	
@@ -45,7 +45,7 @@
 
   	  	<div class = item th:if="${currentPage < totalPages}">
     		<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage + 1})}">
-        		<button>SUCCESSIVE</button>
+        		<button>NEXT</button>
     		</a>
 		</div>
     </div>

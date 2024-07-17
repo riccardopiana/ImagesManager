@@ -77,6 +77,7 @@ public class GoToAlbum extends HttpServlet {
 		
 		try {
 			album = albumDAO.findById(albumId);
+			session.setAttribute("album", album);
 			if (album == null) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Album not found");
 				return;

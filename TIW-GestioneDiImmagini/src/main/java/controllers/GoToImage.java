@@ -66,6 +66,7 @@ public class GoToImage extends HttpServlet {
 		CommentDAO commentDAO = new CommentDAO(connection);
 		Image image = new Image();
 		List<Comment> comments = new ArrayList<Comment>();
+		int owner = 0;
 		
 		try {
 			image = imageDAO.findById(imageId);
@@ -73,19 +74,29 @@ public class GoToImage extends HttpServlet {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
 				return;
 			}
-			Image currentImage = (Image) session.getAttribute("image");
-			if (currentImage == null) {
-				session.setAttribute("image", image);
-				comments = commentDAO.findByImage(imageId);
-			} else if (image.getId() != currentImage.getId()) {
-				response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect param values 1");
-				return;
-			} else {
-				comments = commentDAO.findByImage(imageId);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover image");
+			return;
+		}
+		
+		User user = (User) session.getAttribute("user");
+		try {
+			List<Image> userImages = imageDAO.findByUser(user.getEmail());
+			for (Image i : userImages) {
+				if (i.getId() == image.getId()) {
+					owner = 1;
+				}
 			}
 		} catch (SQLException e) {
-			e.printStackTrace();
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover image");
+			return;
+		}
+		
+		try {
+			session.setAttribute("image", image);
+			comments = commentDAO.findByImage(imageId);
+		} catch (SQLException e) {
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover comments");
 			return;
 		}
 		
@@ -95,6 +106,7 @@ public class GoToImage extends HttpServlet {
 		ctx.setVariable("image", image);
 		ctx.setVariable("creationDate", image.getCreationDate().toString());
 		ctx.setVariable("comments", comments);
+		ctx.setVariable("owner", owner);
 		templateEngine.process(path, ctx, response.getWriter());
 	}
 	

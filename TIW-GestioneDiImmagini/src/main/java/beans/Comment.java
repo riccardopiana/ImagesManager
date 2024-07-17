@@ -1,24 +1,25 @@
 package beans;
 
 public class Comment {
-	private int ID;
+	private int id;
 	private String text;
-	private String User;
+	private String user;
+	private int image;
 	
-	public int getID() {
-		return ID;
+	public int getId() {
+		return id;
 	}
 	
-	public void setID(int iD) {
-		ID = iD;
+	public void setId(int id) {
+		this.id = id;
 	}
 	
 	public String getUser() {
-		return User;
+		return user;
 	}
 	
 	public void setUser(String user) {
-		User = user;
+		this.user = user;
 	}
 	
 	public String getText() {
@@ -27,6 +28,14 @@ public class Comment {
 	
 	public void setText(String text) {
 		this.text = text;
+	}
+
+	public int getImage() {
+		return image;
+	}
+
+	public void setImage(int image) {
+		this.image = image;
 	}
 	
 	
