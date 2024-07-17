@@ -105,7 +105,6 @@ public class GoToAlbum extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("album", album);
-		ctx.setVariable("creationDate", album.getCreationDate().toString());
 		ctx.setVariable("images", images);
 		ctx.setVariable("currentPage", page);
 		ctx.setVariable("totalPages", totalPages);

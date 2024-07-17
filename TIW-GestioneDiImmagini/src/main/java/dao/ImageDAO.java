@@ -72,9 +72,9 @@ public class ImageDAO {
 		List<Image> images = new ArrayList<Image>();
 		int count = 0;
 		String query = "SELECT Image.ID FROM Image INNER JOIN ImageOfAlbum ON Image.ID=ImageOfAlbum.Image WHERE Album = ? ORDER BY CreationDate desc";
-		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-			pstatement.setLong(1, albumId);
-			try (ResultSet result = pstatement.executeQuery();) {
+		try (PreparedStatement pstatment = connection.prepareStatement(query);) {
+			pstatment.setLong(1, albumId);
+			try (ResultSet result = pstatment.executeQuery();) {
 				while (count < page - 1) {
 					result.next();
 					result.next();
@@ -91,5 +91,13 @@ public class ImageDAO {
 			}
 		}
 		return images;
+	}
+
+	public void deleteImage(Integer imageId) throws SQLException{
+		String query = "DELETE FROM Image WHERE ID = ?";
+		try (PreparedStatement pstatment = connection.prepareStatement(query);) {
+			pstatment.setLong(1, imageId);
+			pstatment.executeUpdate();
+		}
 	}
 }

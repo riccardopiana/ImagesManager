@@ -57,7 +57,6 @@ public class CreateAlbum extends HttpServlet {
 			return;
 		}
 		
-		request.getSession().setAttribute("user", user);
 		response.sendRedirect(getServletContext().getContextPath() + "/GoToHome");
 	}
 

@@ -35,4 +35,14 @@ public class CommentDAO {
 		return comments;
 	}
 
+	public void addComment(String text, String email, int imageId) throws SQLException {
+		String query = "INSERT into Comment (Text, User, Image) VALUES (?, ?, ?)";
+		try (PreparedStatement pstatment = connection.prepareStatement(query);) {
+			pstatment.setString(1, text);
+			pstatment.setString(2, email);
+			pstatment.setLong(3, imageId);
+			pstatment.executeUpdate();
+		}
+	}
+
 }

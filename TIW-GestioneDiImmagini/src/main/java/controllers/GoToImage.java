@@ -70,6 +70,7 @@ public class GoToImage extends HttpServlet {
 		
 		try {
 			image = imageDAO.findById(imageId);
+			session.setAttribute("image", image);
 			if (image == null) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
 				return;
@@ -80,16 +81,8 @@ public class GoToImage extends HttpServlet {
 		}
 		
 		User user = (User) session.getAttribute("user");
-		try {
-			List<Image> userImages = imageDAO.findByUser(user.getEmail());
-			for (Image i : userImages) {
-				if (i.getId() == image.getId()) {
-					owner = 1;
-				}
-			}
-		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover image");
-			return;
+		if (image.getUser().equals(user.getEmail())) {
+			owner = 1;
 		}
 		
 		try {
@@ -104,7 +97,6 @@ public class GoToImage extends HttpServlet {
 		ServletContext servletContext = getServletContext();
 		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
 		ctx.setVariable("image", image);
-		ctx.setVariable("creationDate", image.getCreationDate().toString());
 		ctx.setVariable("comments", comments);
 		ctx.setVariable("owner", owner);
 		templateEngine.process(path, ctx, response.getWriter());

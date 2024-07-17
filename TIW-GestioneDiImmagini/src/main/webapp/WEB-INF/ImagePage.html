@@ -54,9 +54,9 @@
 		<p>Complete the form to add a comment:</p>
 			<form action="AddComment" method="POST">
 				<fieldset><br>
-					Comment: <input type="text" name="comment" required><br><br>
+					Comment: <input type="text" name="text" required><br><br>
 					<input type="submit" value="Add comment">
-					<p th:text=" ${loginMsg}"></p>
+					<p th:text=" ${commentMsg}"></p>
 				</fieldset>
 			</form>
 	</div>
@@ -67,6 +67,7 @@
 		<a th:href="@{/DeleteImage(imageId=${image.id})}">
 			<button>Delete image</button>
 		</a>
+		<p th:text=" ${deleteMsg}"></p>
 	</div>
 </body>
 </html>
