@@ -23,9 +23,6 @@ import dao.*;
 import utils.ConnectionHandler;
 import beans.*;
 
-/**
- * Servlet implementation class GoToImage
- */
 @WebServlet("/GoToImage")
 public class GoToImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
@@ -105,5 +102,12 @@ public class GoToImage extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
-
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }

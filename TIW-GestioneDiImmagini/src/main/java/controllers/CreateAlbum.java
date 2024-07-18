@@ -34,6 +34,7 @@ public class CreateAlbum extends HttpServlet {
 			response.sendRedirect(loginpath);
 			return;
 		}
+		
 		String title = null;
 		int[] imageIds = null;
 		try {
@@ -59,5 +60,12 @@ public class CreateAlbum extends HttpServlet {
 		
 		response.sendRedirect(getServletContext().getContextPath() + "/GoToHome");
 	}
-
+	
+	public void destroy() {
+		try {
+			ConnectionHandler.closeConnection(connection);
+		} catch (SQLException e) {
+			e.printStackTrace();
+		}
+	}
 }
