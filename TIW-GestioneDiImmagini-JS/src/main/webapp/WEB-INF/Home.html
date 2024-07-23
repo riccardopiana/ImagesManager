@@ -1,0 +1,100 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Home</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+<div align="right">
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	<h1>Welcome to the Image Management Home Page</h1>
+	<p th:text="${'Nice to see you again ' + session.user.name + ' ' + session.user.surname}"></p>
+	
+	<div th:if="${userAlbums.size() >0}">
+		<table>
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Creator</th>
+					<th>Date</th>
+					<th>Link</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="album : ${userAlbums}">
+					<td th:text="${album.title}"></td>
+					<td th:text="${album.creator}"></td>
+					<td th:text="${album.creationDate}">
+					<td><a th:href="@{/GoToAlbum(albumId=${album.id})}">Details</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>  
+	<div th:if="${userAlbums.size() == 0}"> You didn't create any album.</div>
+	
+	<br>
+	
+	<div th:if="${otherAlbums.size() >0}">
+		<table>
+			<thead>
+				<tr>
+					<th>Title</th>
+					<th>Creator</th>
+					<th>Date</th>
+					<th>Link</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="album : ${otherAlbums}">
+					<td th:text="${album.title}"></td>
+					<td th:text="${album.creator}"></td>
+					<td th:text="${album.creationDate}">
+					<td><a th:href="@{/GoToAlbum(albumId=${album.id})}">Details</a></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>  
+	<div th:if="${userAlbums.size() == 0}"> No album were created by other users.</div>
+	
+	<br>
+	
+	<div>
+		<p>Complete the form to create a album:</p>
+		<form action="#" th:action="@{/CreateAlbum}" method="POST">
+			<fieldset>
+				<p>Title: <input type="text" name="title" required /></p>
+				<table th:remove="all-but-first">
+					<tr th:each="image : ${userImages}">
+						<td><input type="checkbox" name="checkedImageIds" th:value="${image.id}"></td>
+						<td th:text="${image.title}">Mountains</td>
+					</tr>
+					<tr>
+						<td><input type="checkbox"></td>
+						<td>Sea</td>
+					</tr>
+				</table><br>
+				<input type="submit" value="Create Album">
+				<p th:text=" ${createalbummsg}"></p>
+			</fieldset>
+		</form>
+	</div>
+	
+	<br>
+	
+	<div>
+		<p>Complete the form to upload a image:</p>
+			<form action="UploadImage" method="post" enctype="multipart/form-data">
+				<fieldset>
+					<p><input type="file" name="file" required><br></p>
+    				Title: <input type="text" name="title" required> <br><br>
+					Description: <input type="text" name="description"> <br><br>
+    				<input type="submit" value="Upload Image">
+    				<p th:text=" ${uploadmsg}"></p>
+    			</fieldset>
+			</form>
+	</div>
+</body>
+</html>

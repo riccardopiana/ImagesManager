@@ -1,0 +1,55 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+    <meta charset="ISO-8859-1">
+    <title>Album</title>
+    <link rel="stylesheet" type="text/css" media="all" href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+    <div align="right">
+        <a th:href="@{/Logout}">Logout</a>
+    </div>
+    <h1>Album Page</h1>
+    <a th:href="@{/GoToHome}">Back to home</a>
+
+    <div>
+        <p th:text="'Title: ' + ${album.title}"></p>
+        <p th:text="'Creator: ' + ${album.creator}"></p>
+        <p th:text="'Creation date: ' + ${album.creationDate}"></p>
+    </div>
+
+	<div class=container>
+		
+    	<div class = item th:if="${currentPage > 1}">
+        	<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage - 1})}">
+            	<button>PREV</button>
+            </a>
+  	  	</div>
+	
+    	<div class= item th:if="${images.size() > 0}">
+        	<table>
+        	    <tbody>
+            	    <tr>
+                	    <td th:each="image, iterStat : ${images}" th:if="${iterStat.index < 5}">
+                    	    <a th:href="@{/GoToImage(imageId=${image.id})}">
+                        	    <img th:src="@{GetImage/{image}(image=${image.path})}" height="100" style="width: auto;">
+	                        </a>
+	                        <br>
+	                        <span th:text="${image.title}"></span>
+    	                </td>
+    	                <td th:if="${images.size < 5}" th:each="i : ${#numbers.sequence(1, 5 - images.size)}"></td>
+        	        </tr>
+           		</tbody>
+        	</table>
+		</div>
+
+  	  	<div class = item th:if="${currentPage < totalPages}">
+    		<a th:href="@{/GoToAlbum(albumId=${album.id}, page=${currentPage + 1})}">
+        		<button>NEXT</button>
+    		</a>
+		</div>
+    </div>
+
+    <div th:if="${images.size() == 0}">This album is empty.</div>
+</body>
+</html>

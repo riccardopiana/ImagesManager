@@ -1,0 +1,73 @@
+<!DOCTYPE html>
+<html xmlns:th="http://www.thymeleaf.org">
+<head>
+<meta charset="ISO-8859-1">
+<title>Home</title>
+<link rel="stylesheet" type="text/css" media="all"
+	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+</head>
+<body>
+	<div align="right">
+		<a th:href="@{/Logout}">Logout</a>
+	</div>
+	
+	<h1>Image page</h1>
+	
+	<div>
+		<a th:href="@{/GoToHome}">Back to home</a>
+		<a th:href="@{/GoToAlbum(albumId=${session.album.id})}">Back to album</a>
+	</div>
+	
+	<div>
+        <p th:text="'Title: ' + ${image.title}"></p>
+        <p th:text="'Owner: ' + ${image.user}"></p>
+        <p th:text="'Creation date: ' + ${image.creationDate}"></p>
+        <p th:text="'Description: ' + ${image.description}"></p>
+    </div>
+	
+	
+	<div>
+		<img th:src="@{GetImage/{image}(image=${image.path})}" height="500" style="width: auto;">
+	</div>
+	
+	<div th:if="${comments.size() >0}">
+		<table>
+			<thead>
+				<tr>
+					<th>User</th>
+					<th>Text</th>
+				</tr>
+			</thead>
+			<tbody>
+				<tr th:each="comment : ${comments}">
+					<td th:text="${comment.user}"></td>
+					<td th:text="${comment.text}"></td>
+				</tr>
+			</tbody>
+		</table>
+	</div>  
+	<div th:if="${comments.size() == 0}"> No comments yet.</div>
+	
+	<br>
+	
+	<div>
+		<p>Complete the form to add a comment:</p>
+			<form action="AddComment" method="POST">
+				<fieldset><br>
+					Comment: <input type="text" name="text" required><br><br>
+					<input type="submit" value="Add comment">
+					<p th:text=" ${commentMsg}"></p>
+				</fieldset>
+			</form>
+	</div>
+	
+	<br>
+	
+	<div th:if="${owner == 1}">
+		<a th:href="@{/DeleteImage(imageId=${image.id})}">
+			<button>Delete image</button>
+		</a>
+		<p th:text=" ${deleteMsg}"></p>
+	</div>
+</body>
+</html>
