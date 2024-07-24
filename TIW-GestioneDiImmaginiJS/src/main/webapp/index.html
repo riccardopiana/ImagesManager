@@ -1,26 +1,29 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
 <meta charset="ISO-8859-1">
 <title>Login page</title>
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="loginManagement.js" charset="utf-8" defer></script>
+
 </head>
 <body>
 	<h1>Welcome to the image management application</h1>
 	<div>
 		<p>Complete the form to log in</p>
-		<form action="CheckLogin" method="POST">
+		<form action="#" method="POST">
 			<fieldset>
 				<br> Email: <input type="text" name="email" required> <br>
 				<br> Password: <input type="password" name="password" required><br>
-				<br> <input type="submit" value="Sign in">
-				<p th:text=" ${loginMsg}"></p>
+				<br> <input id="loginbutton" type="button" value="Login">
+				<p id="errormessage"></p>
 			</fieldset>
 		</form>
 	</div>
 
 	<div>
 		<p>Complete the form to register</p>
-		<form action="CheckRegistration" method="POST">
+		<form action="#" method="POST">
 			<fieldset>
 				<br> Name: <input type="text" name="name" required> <br>
 				<br> Surname: <input type="text" name="surname" required>
@@ -29,8 +32,8 @@
 				<br> Password: <input type="password" name="password" required><br>
 				<br> RipPassword: <input type="password" name="ripPassword"
 					required><br>
-				<br> <input type="submit" value="Sign up">
-				<p th:text=" ${registrationMsg}"></p>
+				<br> <input id="signupbutton" type="button" value="Sign up">
+				<p id="signupmessage"></p>
 			</fieldset>
 		</form>
 	</div>
