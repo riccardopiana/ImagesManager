@@ -1,89 +1,68 @@
 <!DOCTYPE html>
-<html xmlns:th="http://www.thymeleaf.org">
+<html>
 <head>
 <meta charset="ISO-8859-1">
 <title>Home</title>
 <link rel="stylesheet" type="text/css" media="all"
-	href="../CSS/mystyle.css" th:href="@{/css/mystyle.css}" />
+	href="CSS/mystyle.css" />
+<script src="utils.js" charset="utf-8" defer></script>
+<script src="imageManagement.js" charset="utf-8" defer></script>
+<script src="sort.js" charset="utf-8" defer></script>
 </head>
 <body>
 	<div align="right">
-		<a th:href="@{/Logout}">Logout</a>
+		<a href="Logout">Logout</a>
 	</div>
 	<h1>Welcome to the Image Management Home Page</h1>
-	<p
-		th:text="${'Nice to see you again ' + session.user.name + ' ' + session.user.surname}"></p>
-
-	<div th:if="${userAlbums.size() >0}">
+	<p>
+		Nice to see you again <span id="id_name"></span>
+	</p>
+	<div id="id_alert" class="alertmessage"></div>
+	<table>
+		<thead>
+			<tr>
+				<th class="sortable">Title</th>
+				<th class="sortable">Creator</th>
+				<th class="sortable">Date</th>
+				<th>Link</th>
+			</tr>
+		</thead>
+		<tbody id="id_userAlbumContainerBody">
+		</tbody>
+	</table>
+	<div id="emptyUserAlbumAlert"></div>
+	<br>
+	<div>
 		<table>
 			<thead>
 				<tr>
-					<th>Title</th>
-					<th>Creator</th>
-					<th>Date</th>
+					<th class="sortable">Title</th>
+					<th class="sortable">Creator</th>
+					<th class="sortable">Date</th>
 					<th>Link</th>
 				</tr>
 			</thead>
-			<tbody>
-				<tr th:each="album : ${userAlbums}">
-					<td th:text="${album.title}"></td>
-					<td th:text="${album.creator}"></td>
-					<td th:text="${album.creationDate}">
-					<td><a th:href="@{/GoToAlbum(albumId=${album.id})}">Details</a></td>
-				</tr>
+			<tbody id="id_otherAlbumContainerBody">
 			</tbody>
 		</table>
 	</div>
-	<div th:if="${userAlbums.size() == 0}">You didn't create any
-		album.</div>
-
+	<div id="emptyUserAlbumAlert"></div>
 	<br>
-
-	<div th:if="${otherAlbums.size() >0}">
-		<table>
-			<thead>
-				<tr>
-					<th>Title</th>
-					<th>Creator</th>
-					<th>Date</th>
-					<th>Link</th>
-				</tr>
-			</thead>
-			<tbody>
-				<tr th:each="album : ${otherAlbums}">
-					<td th:text="${album.title}"></td>
-					<td th:text="${album.creator}"></td>
-					<td th:text="${album.creationDate}">
-					<td><a th:href="@{/GoToAlbum(albumId=${album.id})}">Details</a></td>
-				</tr>
-			</tbody>
-		</table>
-	</div>
-	<div th:if="${userAlbums.size() == 0}">No album were created by
-		other users.</div>
-
-	<br>
-
 	<div>
 		<p>Complete the form to create a album:</p>
-		<form action="#" th:action="@{/CreateAlbum}" method="POST">
+		<form id="id_createAlbumForm" action="#">
 			<fieldset>
 				<p>
 					Title: <input type="text" name="title" required />
 				</p>
-				<table th:remove="all-but-first">
-					<tr th:each="image : ${userImages}">
-						<td><input type="checkbox" name="checkedImageIds"
-							th:value="${image.id}"></td>
-						<td th:text="${image.title}">Mountains</td>
-					</tr>
+				<table>
 					<tr>
-						<td><input type="checkbox"></td>
-						<td>Sea</td>
+						<td><input type="checkbox" name="checkedImageIds"></td>
+						<td id="imageTitle">imageTitle</td>
 					</tr>
 				</table>
 				<br> <input type="submit" value="Create Album">
-				<p th:text=" ${createalbummsg}"></p>
+				<p id="createalbummsg"></p>
 			</fieldset>
 		</form>
 	</div>
@@ -97,13 +76,18 @@
 				<p>
 					<input type="file" name="file" required><br>
 				</p>
-				Title: <input type="text" name="title" required> <br>
-				<br> Description: <input type="text" name="description">
-				<br>
+				Title: <input type="text" name="title" required> <br> <br>
+				Description: <input type="text" name="description"> <br>
 				<br> <input type="submit" value="Upload Image">
-				<p th:text=" ${uploadmsg}"></p>
+				<p id="uploadMessage"></p>
 			</fieldset>
 		</form>
+	</div>
+	
+	<br>
+	
+	<div>
+		
 	</div>
 </body>
 </html>
