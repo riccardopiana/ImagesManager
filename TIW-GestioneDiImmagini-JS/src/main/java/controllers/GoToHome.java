@@ -14,11 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
 import beans.*;
 import dao.*;
 import utils.ConnectionHandler;
@@ -26,7 +21,6 @@ import utils.ConnectionHandler;
 @WebServlet("/GoToHome")
 public class GoToHome extends HttpServlet {
 	private static final long serialVersionUID = 1L;
-	private TemplateEngine templateEngine;
 	private Connection connection = null;
 
     public GoToHome() {
@@ -35,11 +29,7 @@ public class GoToHome extends HttpServlet {
 
     public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
+		
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
     
@@ -81,11 +71,6 @@ public class GoToHome extends HttpServlet {
 		
 		String path = "/WEB-INF/Home.html";
 		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("userAlbums", userAlbums);
-		ctx.setVariable("otherAlbums", otherAlbums);
-		ctx.setVariable("userImages", userImages);
-		templateEngine.process(path, ctx, response.getWriter());
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

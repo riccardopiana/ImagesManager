@@ -14,11 +14,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import org.thymeleaf.TemplateEngine;
-import org.thymeleaf.context.WebContext;
-import org.thymeleaf.templatemode.TemplateMode;
-import org.thymeleaf.templateresolver.ServletContextTemplateResolver;
-
 import dao.*;
 import utils.ConnectionHandler;
 import beans.*;
@@ -27,19 +22,12 @@ import beans.*;
 public class GoToImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-	private TemplateEngine templateEngine;
-    
     public GoToImage() {
         super();
     }
     
     public void init() throws ServletException {
 		ServletContext servletContext = getServletContext();
-		ServletContextTemplateResolver templateResolver = new ServletContextTemplateResolver(servletContext);
-		templateResolver.setTemplateMode(TemplateMode.HTML);
-		this.templateEngine = new TemplateEngine();
-		this.templateEngine.setTemplateResolver(templateResolver);
-		templateResolver.setSuffix(".html");
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
@@ -92,11 +80,6 @@ public class GoToImage extends HttpServlet {
 		
 		String path = "/WEB-INF/ImagePage.html";
 		ServletContext servletContext = getServletContext();
-		final WebContext ctx = new WebContext(request, response, servletContext, request.getLocale());
-		ctx.setVariable("image", image);
-		ctx.setVariable("comments", comments);
-		ctx.setVariable("owner", owner);
-		templateEngine.process(path, ctx, response.getWriter());
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
