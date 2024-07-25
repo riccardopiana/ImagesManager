@@ -1,14 +1,5 @@
 /build/
 
-### Eclipse ###
-.apt_generated
-.classpath
-.factorypath
-.project
-.settings
-.springBeans
-.sts4-cache
-
 ### Mac OS ###
 .DS_Store
 /.metadata/
