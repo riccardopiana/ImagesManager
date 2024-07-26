@@ -1,7 +1,7 @@
 { // avoid variables ending up in the global scope
 
 	// page components
-	let missionDetails, missionsList, wizard,
+	let userAlbums, otherAlbums, wizard,
 		pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -61,7 +61,7 @@
 		};
 
 		this.update = function(userAlbums) {
-			var elem, i, row, titlecell, creatorcell, datecell, linkcell, anchor;
+			var row, titlecell, creatorcell, datecell, linkcell, anchor;
 			this.listcontainerbody.innerHTML = ""; // empty the table body
 			// build updated list
 			var self = this;
@@ -88,7 +88,7 @@
 				anchor.setAttribute('albumid', album.id); // set a custom HTML attribute
 				anchor.addEventListener("click", (e) => {
 					// dependency via module parameter
-					missionDetails.show(e.target.getAttribute("albumid")); // the list must know the details container
+					albumDetails.show(e.target.getAttribute("albumid")); // the list must know the details container
 				}, false);
 				anchor.href = "#";
 				row.appendChild(linkcell);
@@ -104,15 +104,84 @@
 	        (albumId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
 	      if (anchorToClick) anchorToClick.dispatchEvent(e);
 	    }
-
-
-
-
-
 	}
+	
+	
 
 
+	function OtherAlbums(_alert, _listcontainer, _listcontainerbody) {
+		this.alert = _alert;
+		this.listcontainer = _listcontainer;
+		this.listcontainerbody = _listcontainerbody;
 
+		this.reset = function() {
+			this.listcontainer.style.visibility = "hidden";
+		}
+
+		this.show = function(next) {
+			var self = this;
+			makeCall("GET", "GetOtherAlbums", null,
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var albumsToShow = JSON.parse(req.responseText);
+							if (albumsToShow.length == 0) {
+								self.alert.textContent = "No album has been created yet!";
+								return;
+							}
+							self.update(albumsToShow); // self visible by closure
+							if (next) next(); // show the default element of the list if present
+
+						} else if (req.status == 403) {
+							window.location.href = req.getResponseHeader("Location");
+							window.sessionStorage.removeItem('username');
+						}
+						else {
+							self.alert.textContent = message;
+						}
+					}
+				}
+			);
+		};
+
+		this.update = function(userAlbums) {
+			var row, titlecell, creatorcell, datecell, linkcell, anchor;
+			this.listcontainerbody.innerHTML = ""; // empty the table body
+			// build updated list
+			var self = this;
+			userAlbums.forEach(function(album) { // self visible here, not this
+				row = document.createElement("tr");
+				titlecell = document.createElement("td");
+				titlecell.textContent = album.title;
+				row.appendChild(titlecell);
+
+				creatorcell = document.createElement("td");
+				creatorcell.textContent = album.creator;
+				row.appendChild(creatorcell);
+
+				datecell = document.createElement("td");
+				datecell.textContent = album.creationDate;
+				row.appendChild(datecell);
+
+				linkcell = document.createElement("td");
+				anchor = document.createElement("a");
+				linkcell.appendChild(anchor);
+				linkText = document.createTextNode("Show");
+				anchor.appendChild(linkText);
+				//anchor.missionid = mission.id; // make list item clickable
+				anchor.setAttribute('otheralbumid', album.id); // set a custom HTML attribute
+				anchor.addEventListener("click", (e) => {
+					// dependency via module parameter
+					albumDetails.show(e.target.getAttribute("otheralbumid")); // the list must know the details container
+				}, false);
+				anchor.href = "#";
+				row.appendChild(linkcell);
+				self.listcontainerbody.appendChild(row);
+			});
+			this.listcontainer.style.visibility = "visible";
+		}
+	}
 
 
 
@@ -133,6 +202,11 @@
 			alertContainer,
 			document.getElementById("id_userAlbumContainer"),
 			document.getElementById("id_userAlbumContainerBody"));
+			
+		otherAlbums = new OtherAlbums(
+			alertContainer,
+			document.getElementById("id_otherAlbumContainer"),
+			document.getElementById("id_otherAlbumContainerBody"));
 
 		this.refresh = function(currentMission) { // currentMission initially null at start
 			alertContainer.textContent = "";        // not null after creation of status change
@@ -140,6 +214,8 @@
 			userAlbums.show(function() {
 			missionsList.autoclick(currentMission);
 			}); // closure preserves visibility of this
+			otherAlbums.reset();
+			otherAlbums.show();
 		};
 	}
 
