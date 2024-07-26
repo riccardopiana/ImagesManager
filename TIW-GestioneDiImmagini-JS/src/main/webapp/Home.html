@@ -53,13 +53,11 @@
 		<form id="id_createAlbumForm" action="#">
 			<fieldset>
 				<p>
-					Title: <input type="text" name="title" required />
+					Title: <input id="albumTitle" type="text" name="title" required />
 				</p>
 				<table>
-					<tr>
-						<td><input type="checkbox" name="checkedImageIds"></td>
-						<td id="imageTitle">imageTitle</td>
-					</tr>
+					<tbody id="id_createAlbumContainerBody">
+					</tbody>
 				</table>
 				<br> <input type="submit" value="Create Album">
 				<p id="createalbummsg"></p>
@@ -71,13 +69,13 @@
 
 	<div>
 		<p>Complete the form to upload a image:</p>
-		<form action="UploadImage" method="post" enctype="multipart/form-data">
+		<form id="uploadImage" action="#" enctype="multipart/form-data">
 			<fieldset>
 				<p>
-					<input type="file" name="file" required><br>
+					<input id="image" type="file" name="file" required><br>
 				</p>
-				Title: <input type="text" name="title" required> <br> <br>
-				Description: <input type="text" name="description"> <br>
+				Title: <input id="imageTitle" type="text" name="title" required> <br> <br>
+				Description: <input id="imageDescription" type="text" name="description"> <br>
 				<br> <input type="submit" value="Upload Image">
 				<p id="uploadMessage"></p>
 			</fieldset>

@@ -1,7 +1,7 @@
 { // avoid variables ending up in the global scope
 
 	// page components
-	let userAlbums, otherAlbums, wizard,
+	let userAlbums, otherAlbums, createAlbum,
 		pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
@@ -184,6 +184,127 @@
 	}
 
 
+	function CreateAlbum(_alert, _form, _listcontainerbody){
+		this.alert = _alert;
+		this.form = _form;
+		this.listcontainerbody = _listcontainerbody;
+		
+		this.reset = function() {
+			this.listcontainerbody.style.visibility = "hidden";
+		}
+		
+		this.show = function(){
+			var self = this;
+			makeCall("GET", "GetUserImages", null,
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var userImages = JSON.parse(req.responseText);
+							if (userImages.length == 0) {
+								self.alert.textContent = "You haven't uploaded any image yet!";
+								return;
+							}
+							self.update(userImages); // self visible by closure
+
+						} else if (req.status == 403) {
+							window.location.href = req.getResponseHeader("Location");
+							window.sessionStorage.removeItem('username');
+						}
+						else {
+							self.alert.textContent = message;
+						}
+					}
+				}
+			);	
+		}
+		
+		this.update = function(userImages) {
+			var row, checkbox, imagetitle, datecell, input, linkcell, anchor;
+			this.listcontainerbody.innerHTML = ""; // empty the table body
+			// build updated list
+			var self = this;
+			userImages.forEach(function(image) { // self visible here, not this
+				row = document.createElement("tr");
+				
+				checkbox = document.createElement("td");
+				input = document.createElement("INPUT");
+				input.setAttribute("type", "checkbox")
+				input.setAttribute("value",image.id)
+				input.setAttribute("name","id")
+				checkbox.appendChild(input);
+				row.appendChild(checkbox);
+				
+				imagetitle = document.createElement("td");
+				imagetitle.textContent = image.title;
+				row.appendChild(imagetitle);
+
+				self.listcontainerbody.appendChild(row);
+			});
+			this.listcontainerbody.style.visibility = "visible";
+		}
+		
+		
+		this.registerEvents = function(orchestrator) {
+				var params=[]
+				//Get all the checkbox checked which each one from the form has the idImage as value 
+  			 	this.form.querySelector("input[type='button'].submit").addEventListener('click', (e) => {
+  					let values = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+    				.map(item => item.value);
+	    			for(let i=0;i<values.length;i++){
+						params[i]="id="+parseInt(values[i]);
+					}
+					var str;
+					for(let n=0;n<params.length;n++){
+						if(n==0){
+							str=params[n]+"&";
+						}
+						else{
+							str+=params[n]+"&";
+						}
+					}
+	        		var formToSend = e.target.closest("form");
+			       if (formToSend.checkValidity()) {
+			          var self = this;
+		 			  makeCall("POST", "CreateAlbum?title=" + titleAlbumNew.value + "&" + str, formToSend,function(req) {
+			              if (req.readyState == XMLHttpRequest.DONE) {
+			                var message = req.responseText; //error messagge 
+			              if (req.status == 200) {
+			                   imagesNewAlbum.show()
+			                   albumsOwned.show();
+			              }else if (req.status == 403) {
+		                       window.location.href = req.getResponseHeader("Location");
+		                       window.sessionStorage.removeItem('username');
+		                  }else {
+			                   self.alert.textContent = message;
+			                   self.show();
+				                }
+				              }
+				            }
+				          );
+				  }else{
+				     this.alert.textContent = "Required parameters for form missing";
+				}
+		     	 }); 
+		     }   
+		
+		
+	}
+
+
+
+
+
+
+
+
+
+
+	function UploadImage(_alert, _uploadForm){
+		this.alert = _alert;
+		this.uploadForm = _uploadForm;
+		
+	}
 
 
 
@@ -208,14 +329,23 @@
 			document.getElementById("id_otherAlbumContainer"),
 			document.getElementById("id_otherAlbumContainerBody"));
 
-		this.refresh = function(currentMission) { // currentMission initially null at start
+		createAlbum = new CreateAlbum(
+			document.getElementById("createalbummsg"),
+			document.getElementById("id_createAlbumForm"),
+			document.getElementById("id_createAlbumContainerBody"));
+
+
+		this.refresh = function() { // currentMission initially null at start
 			alertContainer.textContent = "";        // not null after creation of status change
 			userAlbums.reset();
 			userAlbums.show(function() {
-			missionsList.autoclick(currentMission);
+			//userAlbums.autoclick(currentMission);
 			}); // closure preserves visibility of this
 			otherAlbums.reset();
 			otherAlbums.show();
+			createAlbum.reset();
+			createAlbum.show();
+			
 		};
 	}
 

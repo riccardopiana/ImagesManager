@@ -21,42 +21,44 @@ import beans.*;
 import dao.*;
 import utils.ConnectionHandler;
 
-@WebServlet("/GetOtherAlbums")
+@WebServlet("/GetUserImages")
 @MultipartConfig
-public class GetOtherAlbums extends HttpServlet {
+public class GetUserImages extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
        
-    public GetOtherAlbums() {
+    public GetUserImages() {
         super();
     }
     
     public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
-
+    
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
 			throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		User user = (User) session.getAttribute("user");
-		AlbumDAO albumDAO = new AlbumDAO(connection);
-		List<Album> otherAlbums = new ArrayList<Album>();
+		ImageDAO imageDAO = new ImageDAO(connection);
+		List<Image> userImages = new ArrayList<Image>();
 		
 		try {
-			otherAlbums= albumDAO.findOthers(user.getEmail());
+			userImages = imageDAO.findByUser(user.getEmail());
 			} catch (SQLException e) {
 				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
 				response.getWriter().println("Not possible to recover album");
 				return;
 		}
+		
 		Gson gson = new GsonBuilder()
 				   .setDateFormat("yyyy MMM dd").create();
-		String json = gson.toJson(otherAlbums);
-		
+		String json = gson.toJson(userImages);
 		
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
+		
+		
 	}
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
