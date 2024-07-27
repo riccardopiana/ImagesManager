@@ -25,6 +25,6 @@
 	</welcome-file-list>
 	<context-param>
 		<param-name>uploadLocation</param-name>
-		<param-value>/Users/christianprendin/Desktop/TIW_Project/Immagini</param-value>
+		<param-value>/Users/christianprendin/Desktop/TIW_Project/Immagini/</param-value>
 	</context-param>
 </web-app>

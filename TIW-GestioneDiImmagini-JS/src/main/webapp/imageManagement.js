@@ -343,27 +343,28 @@
 			    var self = this;
 			    var indexMax=index+5
 			    imagesToShow=Array.from(imagesAlbum);
+			    row = document.createElement("tr");
 			    for(var h;index<imagesToShow.length && index<indexMax ;index++ ){ 
-				        row = document.createElement("tr");
+				        //row = document.createElement("tr");
+				        /*
 				        destcell = document.createElement("td");
 				        destcell.textContent = imagesToShow[index].title;
 				        row.appendChild(destcell);
 				        datecell = document.createElement("td");
 				        datecell.textContent = imagesToShow[index].description;
 				        row.appendChild(datecell);
+				        */
 				        destcell = document.createElement("td");
-				        destcell.setAttribute("class","tdImageToShow");
+				        //destcell.setAttribute("class","tdImageToShow");
 				        div= document.createElement("div");
-				        div.setAttribute("align","center");
-				        div.setAttribute("class","divImageToShow");
+				        //div.setAttribute("align","center");
 				        datecell = document.createElement("img");
-				        datecell.setAttribute("class","imageToShow");
-				        datecell.src= imagesToShow[index].path;
+				        datecell.src= "GetImage/" + imagesToShow[index].path;
 				        datecell.setAttribute("idImage",imagesToShow[index].id)
-				        datecell.setAttribute("class","imageToShow");
-				        datecell.setAttribute("align","center");
+				        datecell.setAttribute("height", "50");
+				        //datecell.setAttribute("align","center");
 			    	    datecell.addEventListener('mouseenter', function(e) {
-					    showImage.show(e.target.getAttribute("idImage"))
+					    //showImage.show(e.target.getAttribute("idImage"))
 					    });
 					    destcell.appendChild(datecell);
 				        row.appendChild(destcell);  
