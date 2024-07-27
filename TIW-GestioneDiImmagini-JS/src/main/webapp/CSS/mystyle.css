@@ -9,3 +9,27 @@ th.sortable {
 .alertmessage{
 	color: red;
 }
+
+table, th, tr {
+	border: 1px solid black;
+}
+
+table {
+	border-collapse: collapse;
+}
+
+td {
+	padding: 5px;
+	border: 1px solid black;
+	text-align: center;
+	min-width: 100px;
+}
+
+.container {
+	text-align: center;
+}
+
+.item {
+	display: inline-block;
+	text-align: center;
+}

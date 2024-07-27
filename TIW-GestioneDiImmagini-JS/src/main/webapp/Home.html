@@ -18,44 +18,63 @@
 		Nice to see you again <span id="id_username"></span>
 	</p>
 	<div id="id_alert" class="alertmessage"></div>
-	<table id="id_userAlbumContainer" class="boxed">
-		<thead>
+	<table>
+		<tbody>
 			<tr>
-				<th class="sortable">Title</th>
-				<th class="sortable">Creator</th>
-				<th class="sortable">Date</th>
-				<th>Link</th>
+				<td>
+					<table id="id_userAlbumContainer" class="boxed">
+						<thead>
+							<tr>
+								<th class="sortable">Title</th>
+								<th class="sortable">Creator</th>
+								<th class="sortable">Date</th>
+								<th>Link</th>
+							</tr>
+						</thead>
+						<tbody id="id_userAlbumContainerBody">
+						</tbody>
+					</table>
+					<div id="id_emptyUserAlbumAlert"></div>
+				</td>
+				<td>
+					<table id="id_albumContainer" class="boxed">
+						<tbody id="id_albumContainerBody">
+						</tbody>
+					</table>
+					<div id="id_emptyAlbumAlert"></div>
+					<div class="page">
+						<input type="button" name="next" value="Next" id="next">	
+						<input type="button" value="Prev" name="prev" id="prev">						
+					</div>
+				</td>
 			</tr>
-		</thead>
-		<tbody id="id_userAlbumContainerBody">
+			<tr>
+				<td>
+					<table id="id_otherAlbumContainer" class="boxed">
+						<thead>
+							<tr>
+								<th class="sortable">Title</th>
+								<th class="sortable">Creator</th>
+								<th class="sortable">Date</th>
+								<th>Link</th>
+							</tr>
+						</thead>
+						<tbody id="id_otherAlbumContainerBody">
+						</tbody>
+					</table>
+					<div id="id_emptyOtherAlbumAlert"></div>
+				</td>
+			</tr>
 		</tbody>
 	</table>
-	<div id="emptyUserAlbumAlert"></div>
-	<br>
-	<div>
-		<table id="id_otherAlbumContainer" class="boxed">
-			<thead>
-				<tr>
-					<th class="sortable">Title</th>
-					<th class="sortable">Creator</th>
-					<th class="sortable">Date</th>
-					<th>Link</th>
-				</tr>
-			</thead>
-			<tbody id="id_otherAlbumContainerBody">
-			</tbody>
-		</table>
-	</div>
-	<div id="emptyUserAlbumAlert"></div>
-	<br>
 	<div>
 		<p>Complete the form to create a album:</p>
 		<form id="id_createAlbumForm" action="#">
 			<fieldset>
 				<p>
-					Title: <input id="albumTitle" type="text" name="title" required />
+					Title: <input id="id_albumTitle" type="text" name="title" required />
 				</p>
-				<table>
+				<table id="id_createAlbumContainer">
 					<tbody id="id_createAlbumContainerBody">
 					</tbody>
 				</table>
@@ -74,18 +93,17 @@
 				<p>
 					<input id="image" type="file" name="file" required><br>
 				</p>
-				Title: <input id="imageTitle" type="text" name="title" required> <br> <br>
-				Description: <input id="imageDescription" type="text" name="description"> <br>
-				<br> <input type="submit" value="Upload Image">
+				Title: <input id="imageTitle" type="text" name="title" required>
+				<br> <br> Description: <input id="imageDescription"
+					type="text" name="description"> <br> <br> <input
+					type="submit" value="Upload Image">
 				<p id="uploadMessage"></p>
 			</fieldset>
 		</form>
 	</div>
-	
+
 	<br>
-	
-	<div>
-		
-	</div>
+
+	<div></div>
 </body>
 </html>
