@@ -54,7 +54,7 @@
 
 	<div>
 		<p>Complete the form to add a comment:</p>
-		<form action="AddComment" method="POST">
+		<form action="#" th:action="@{/AddComment(imageId=${image.id})}" method="POST">
 			<fieldset>
 				<br> Comment: <input type="text" name="text" required><br>
 				<br> <input type="submit" value="Add comment">

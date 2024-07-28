@@ -28,17 +28,17 @@ public class GetImage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String loginpath = getServletContext().getContextPath() + "/index.html";
 		HttpSession session = request.getSession();
 		if (session.isNew() || session.getAttribute("user") == null) {
-			response.sendRedirect(loginpath);
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 		
 		String pathInfo = request.getPathInfo();
 
 		if (pathInfo == null || pathInfo.equals("/")) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file name");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Missing file name");
 			return;
 		}
 
@@ -48,7 +48,8 @@ public class GetImage extends HttpServlet {
 		System.out.println(folderPath);
 
 		if (!file.exists() || file.isDirectory()) {
-			response.sendError(HttpServletResponse.SC_NOT_FOUND, "File not present");
+			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+			response.getWriter().println("File not present");
 			return;
 		}
 

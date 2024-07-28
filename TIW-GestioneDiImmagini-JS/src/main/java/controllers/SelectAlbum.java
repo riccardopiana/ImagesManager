@@ -33,13 +33,10 @@ public class SelectAlbum extends HttpServlet {
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
-		
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
-		if(user == null) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+		if (session.isNew() || session.getAttribute("user") == null) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 		
@@ -53,34 +50,31 @@ public class SelectAlbum extends HttpServlet {
 			return;
 		}
 		
-		
 		ImageDAO imagesDAO = new ImageDAO(connection);
 		List<Image> images = new ArrayList<Image>();
-
+		
 		try {
 			images = imagesDAO.findByAlbum(albumId);
-			 if (images.isEmpty()) {
+			 if (images == null || images.isEmpty()) {
 				 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				 response.getWriter().println("This album is empty!");
 				 return;
 			 }
 		} catch (SQLException e) {
-			e.printStackTrace();
-			
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Not possible to recover album images");
 			return;
 		}
 		
 		response.setStatus(HttpServletResponse.SC_OK);
-		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MMM dd").create();
+		Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
 		String json = gson.toJson(images);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		doGet(request, response);
 	}
 	

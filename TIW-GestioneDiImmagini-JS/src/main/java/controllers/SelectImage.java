@@ -3,10 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
-import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -32,23 +29,24 @@ public class SelectImage extends HttpServlet {
 	}
 
 	public void init() throws ServletException {
-	
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response)
-			throws ServletException, IOException {
-
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		HttpSession session = request.getSession();
+		if (session.isNew() || session.getAttribute("user") == null) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+		
 		Integer imageId = null;
+		
 		try {
 			imageId = Integer.parseInt(request.getParameter("imageId"));
-				
 		} catch (NumberFormatException | NullPointerException e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Incorrect or missing param values");
 			return;
-		} catch (Exception e) {
-			e.printStackTrace();
 		}
 
 		ImageDAO imagesDAO= new ImageDAO(connection);
@@ -56,20 +54,18 @@ public class SelectImage extends HttpServlet {
 		
 		try {
 			image= imagesDAO.findById(imageId);
-			
 			if (image == null) {
 				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				response.getWriter().println("Resource not found");
-				return;
-				
+				response.getWriter().println("Image not found");
+				return;	
 			}
-			
 		} catch (SQLException e) {
-			e.printStackTrace();
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Not possible to recover image");
 			return;
 		}
-		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MMM dd").create();
+		
+		Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
 		String json = gson.toJson(image);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
@@ -78,7 +74,9 @@ public class SelectImage extends HttpServlet {
 	
 	}
 
-
+	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
+		doGet(request, response);
+	}
 
 	public void destroy() {
 		try {

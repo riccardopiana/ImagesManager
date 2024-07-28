@@ -45,18 +45,25 @@ public class AddComment extends HttpServlet {
 			return;
 		}
 		
+		Integer imageId = null;
+		try {
+			imageId = Integer.parseInt(request.getParameter("imageId"));
+		} catch (NumberFormatException | NullPointerException e) {
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect imageId");
+			return;
+		}
+		
 		User user = (User) session.getAttribute("user");
-		Image image= (Image) session.getAttribute("image");
 		CommentDAO commentDAO = new CommentDAO(connection);
 		
 		try {
-			commentDAO.addComment(text, user.getEmail(), image.getId());
+			commentDAO.addComment(text, user.getEmail(), imageId);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to add comment");
 			return;
 		}
 		
-		response.sendRedirect(getServletContext().getContextPath() + "/GoToImage?imageId=" + image.getId());
+		response.sendRedirect(getServletContext().getContextPath() + "/GoToImage?imageId=" + imageId);
 	}
 	
 	public void destroy() {

@@ -2,7 +2,7 @@
 
 	// page components
 	let userAlbums, otherAlbums, createAlbum,
-		pageOrchestrator = new PageOrchestrator(); // main controller
+	pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
 		if (sessionStorage.getItem("username") == null) {
@@ -15,7 +15,7 @@
 
 
 	// Constructors of view components
-
+	
 	function PersonalMessage(_username, messagecontainer) {
 		this.username = _username;
 		this.show = function() {
@@ -51,8 +51,7 @@
 						} else if (req.status == 403) {
 							window.location.href = req.getResponseHeader("Location");
 							window.sessionStorage.removeItem('username');
-						}
-						else {
+						} else {
 							self.alert.textContent = message;
 						}
 					}
@@ -107,8 +106,6 @@
 	}
 	
 	
-
-
 	function OtherAlbums(_alert, _listcontainer, _listcontainerbody) {
 		this.alert = _alert;
 		this.listcontainer = _listcontainer;
@@ -136,8 +133,7 @@
 						} else if (req.status == 403) {
 							window.location.href = req.getResponseHeader("Location");
 							window.sessionStorage.removeItem('username');
-						}
-						else {
+						} else {
 							self.alert.textContent = message;
 						}
 					}
@@ -212,8 +208,7 @@
 						} else if (req.status == 403) {
 							window.location.href = req.getResponseHeader("Location");
 							window.sessionStorage.removeItem('username');
-						}
-						else {
+						} else {
 							self.alert.textContent = message;
 						}
 					}
@@ -248,177 +243,225 @@
 		
 		
 		this.registerEvents = function(orchestrator) {
-				var params=[]
-				//Get all the checkbox checked which each one from the form has the idImage as value 
-  			 	this.form.querySelector("input[type='submit']").addEventListener('click', (e) => {
-  					let values = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
-    				.map(item => item.value);
-	    			for(let i=0;i<values.length;i++){
-						params[i]="id="+parseInt(values[i]);
-					}
-					var str;
-					for(let n=0;n<params.length;n++){
-						if(n==0){
-							str=params[n]+"&";
-						}
-						else{
-							str+=params[n]+"&";
-						}
-					}
-	        		var formToSend = e.target.closest("form");
-			       if (formToSend.checkValidity()) {
-			          var self = this;
-		 			  makeCall("POST", "CreateAlbum?title=" + self.albumtitle.value + "&" + str, formToSend,function(req) {
-			              if (req.readyState == XMLHttpRequest.DONE) {
-			                var message = req.responseText; //error messagge 
-			              if (req.status == 200) {
-			                   createAlbum.show()
-			                   userAlbums.show();
-			              }else if (req.status == 403) {
-		                       window.location.href = req.getResponseHeader("Location");
-		                       window.sessionStorage.removeItem('username');
-		                  }else {
-							  console.error("Error response:", message);
-			                   self.alert.textContent = message;
-			                   self.show();
-				                }
-				              }
-				            }
-				          );
-				  }else{
-				     this.alert.textContent = "Required parameters for form missing";
+			var params=[];
+			//Get all the checkbox checked which each one from the form has the idImage as value 
+  		 	this.form.querySelector("input[type='button']").addEventListener('click', (e) => {
+ 			let values = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+    			.map(item => item.value);
+	    		for(let i=0;i<values.length;i++){
+					params[i]="id="+parseInt(values[i]);
 				}
-		     	 }); 
-		     }   
-		
-		
+				var str;
+				for(let n=0;n<params.length;n++){
+					if(n==0){
+						str=params[n]+"&";
+					} else{
+						str+=params[n]+"&";
+					}
+				}
+	       		var formToSend = e.target.closest("form");
+				if (formToSend.checkValidity()) {
+		        	var self = this;
+	 				makeCall("POST", "CreateAlbumJS?title=" + self.albumtitle.value + "&" + str, formToSend,function(req) {
+						if (req.readyState == 4) {
+				           	var message = req.responseText; //error messagge 
+					           	if (req.status == 200) {
+					               	createAlbum.show();
+					               	userAlbums.show();
+				            	} else if (req.status == 403) {
+			                    	window.location.href = req.getResponseHeader("Location");
+			                    	window.sessionStorage.removeItem('username');
+				                } else {
+					               	self.alert.textContent = message;
+					               	self.show();
+						       	}
+					      	}
+						});
+				}else{
+			    	this.alert.textContent = "Required parameters for form missing";
+				}
+			}); 
+		}   
 	}
 
 
-	function ShowAlbum(_alert, _listcontainer, _listcontainerbody, _next, _prev){
+	function ShowAlbum(_alert, _listcontainer, _listcontainerbody, _next, _prev) {
 		this.alert = _alert;
 		this.listcontainer = _listcontainer;
 		this.listcontainerbody = _listcontainerbody;
-		this.next=_next;
-		this.prev=_prev;
+		this.next = _next;
+		this.prev = _prev;
 
 		this.reset = function() {
 			this.listcontainer.style.visibility = "hidden";
 			this.next.style.visibility = "hidden";
 			this.prev.style.visibility = "hidden";
 		}
-		
+
 		var imagesAlbum;
-	        this.show = function(albumid) {
-		        var self = this;
-		        makeCall("GET", "SelectAlbum?albumId=" + albumid, null, function(req) {
-		         	 if (req.readyState == 4) {
-		           		 var message = req.responseText;
-			             if (req.status == 200) {
-			                 imagesAlbum = JSON.parse(req.responseText);
-				              if (imagesAlbum.length == 0) {
-				                self.alert.textContent = "No images for this album!";
-				                return;
-				              }
-				          self.alert.textContent = "";
-			              self.update(imagesAlbum,0);//Pass the index 0, initialize the table
-			            
-			             }else if (req.status == 403) {
-			                  window.location.href = req.getResponseHeader("Location");
-			                  window.sessionStorage.removeItem('username');
-		                 }else {
-			            	  self.alert.textContent = message;
-			            	  self.listcontainer.style.visibility = "hidden";
-			          	 }
-		            }
-		        }
-		      	);
-	       };
-		    
-		   var imagesToShow=[];
-		   var currentIndex
-		   
-		   //Update the table contenet the images of the album selected  
-		   this.update = function(imagesAlbum, index) {
-		   		var row, destcell, imagecell, titlecell, imagerow, titlerow, anchor;
-		   		this.listcontainerbody.innerHTML = ""; // empty the table body
-			    var self = this;
-			    var indexMax=index+5
-			    imagesToShow=Array.from(imagesAlbum);
-			    row = document.createElement("tr");
-			    for(var h;index<imagesToShow.length && index<indexMax ;index++ ){ 
-				        destcell = document.createElement("td");
-				        
-				        imagerow = document.createElement("tr");
-				        destcell.appendChild(imagerow);
-				        
-				        imagecell = document.createElement("img");
-				        imagecell.src= "GetImage/" + imagesToShow[index].path;
-				        imagecell.setAttribute("idImage",imagesToShow[index].id);
-				        imagecell.setAttribute("height", "75");
-					    
-					    
-				        imagecell.addEventListener('mouseenter', function(e) {
-							const modal = document.querySelector(destcell.dataset.modalTarget);
-							showFullImage.show(e.target.getAttribute("idImage"), modal);
-							//openModal(modal);
-					    });
-					    
-					    imagerow.appendChild(imagecell);
-					    destcell.appendChild(imagerow);
-				        
-				        titlerow = document.createElement("tr");
-				        titlecell = document.createElement("td");
-				        titlecell.textContent = imagesToShow[index].title;
-				        titlerow.appendChild(titlecell);
-				        
-				        destcell.appendChild(titlerow);
-				        
-				        destcell.setAttribute("data-modal-target", "#modal");
-				        
-				        row.appendChild(destcell);
-			      		 
-			      		self.listcontainerbody.appendChild(row);
-			 	 }
-			     currentIndex=index
-			     this.listcontainer.style.visibility = "visible";
-			     if(indexMax<imagesToShow.length){
-			        this.next.style.visibility = "visible";
-			     }else{
-					this.next.style.visibility = "hidden";
-				 }
-					
-			     if(currentIndex>5){
-			        this.prev.style.visibility = "visible";
-			     }else{
-				 	this.prev.style.visibility = "hidden";
+		this.show = function(albumid) {
+			var self = this;
+			makeCall("GET", "SelectAlbum?albumId=" + albumid, null, function(req) {
+				if (req.readyState == 4) {
+					var message = req.responseText;
+					if (req.status == 200) {
+						imagesAlbum = JSON.parse(req.responseText);
+						if (imagesAlbum.length == 0) {
+							self.alert.textContent = "No images for this album!";
+							return;
+						}
+						self.alert.textContent = "";
+						self.update(imagesAlbum, 0);//Pass the index 0, initialize the table
+
+					} else if (req.status == 403) {
+						window.location.href = req.getResponseHeader("Location");
+						window.sessionStorage.removeItem('username');
+					} else {
+						self.alert.textContent = message;
+						self.listcontainer.style.visibility = "hidden";
+					}
 				}
 			}
-	      //Add an event listenr to next and prev button
-	        this.registerEvents = function(orchestrator) {
-		   		this.next.addEventListener('click', (e) => { 
-				this.update(imagesAlbum,currentIndex)
-		    	});
-		    	//Check if the last index is divisble per 5, if not bring the index to the closeset multiple of 5 greater then currentIndex
-				this.prev.addEventListener('click', (e) => {	
-					if(currentIndex%5!=0){
-						while(currentIndex%5!=0){
-							  currentIndex++;
-						}
-					 }
-					currentIndex=currentIndex-10
-					this.update(imagesAlbum,currentIndex)
+			);
+		};
+
+		var imagesToShow = [];
+		var currentIndex
+
+		// Update the table content the images of the album selected  
+		this.update = function(imagesAlbum, index) {
+			var row, destcell, imagecell, titlecell, imagerow, titlerow, anchor;
+			this.listcontainerbody.innerHTML = ""; // empty the table body
+			var self = this;
+			var indexMax = index + 5;
+			var imagesToShow = Array.from(imagesAlbum);
+			row = document.createElement("tr");
+
+			for (var i = 0; i < 5; i++) {
+				destcell = document.createElement("td");
+
+				if (index < imagesToShow.length) {
+					// Riga per l'immagine
+					imagerow = document.createElement("tr");
+					imagecell = document.createElement("img");
+					imagecell.src = "GetImage/" + imagesToShow[index].path;
+					imagecell.setAttribute("idImage", imagesToShow[index].id);
+					imagecell.setAttribute("height", "75");
+					imagecell.setAttribute("data-modal-target", "#modal");
+					imagecell.addEventListener('mouseenter', function(e) {
+						const modal = document.querySelector(destcell.dataset.modalTarget);
+						showFullImage.show(e.target.getAttribute("idImage"), modal);
 					});
+					imagerow.appendChild(imagecell);
+					destcell.appendChild(imagerow);
+
+					// Riga per il titolo
+					titlerow = document.createElement("tr");
+					titlecell = document.createElement("td");
+					titlecell.textContent = imagesToShow[index].title;
+					titlerow.appendChild(titlecell);
+					destcell.appendChild(titlerow);
+
+					// Imposta la cella come draggable
+					destcell.setAttribute("draggable", "true");
+					destcell.setAttribute("id", "cell-" + index);
+
+					// Gestori di eventi per il drag and drop sulla cella
+					destcell.addEventListener('dragstart', handleDragStart);
+					destcell.addEventListener('dragover', handleDragOver);
+					destcell.addEventListener('drop', handleDrop);
+
+					index++;
 				}
-			
+				row.appendChild(destcell);
+			}
+			self.listcontainerbody.appendChild(row);
+
+			currentIndex = index;
+			this.listcontainer.style.visibility = "visible";
+			if (indexMax < imagesToShow.length) {
+				this.next.style.visibility = "visible";
+			} else {
+				this.next.style.visibility = "hidden";
+			}
+
+			if (currentIndex > 5) {
+				this.prev.style.visibility = "visible";
+			} else {
+				this.prev.style.visibility = "hidden";
+			}
+		}
+
+		// Gestori di eventi per il drag and drop
+		function handleDragStart(e) {
+			e.dataTransfer.setData('text/plain', e.target.id);
+		}
+
+		function handleDragOver(e) {
+			e.preventDefault(); // Necessario per permettere il drop
+		}
+
+		function handleDrop(e) {
+			e.preventDefault();
+			const id = e.dataTransfer.getData('text/plain');
+			const draggableElement = document.getElementById(id);
+
+			// Risalire all'elemento td se il target non è un td
+			let dropzone = e.target.closest('td');
+
+			// Verifica se il target è un titolo (td), risali al td genitore corretto
+			if (!dropzone || !dropzone.getAttribute('draggable')) {
+				dropzone = e.target.closest('tr').parentNode.closest('td');
+			}
+
+			// Solo permettere il drop sulle celle
+			if (dropzone && dropzone.getAttribute('draggable') === 'true') {
+				// Verifica se la cella stessa è il target, se sì, non fare nulla
+				if (draggableElement !== dropzone) {
+					const parent = dropzone.parentNode;
+
+					const dragIndex = Array.from(parent.children).indexOf(draggableElement);
+					const dropIndex = Array.from(parent.children).indexOf(dropzone);
+
+					// Rimuovi l'elemento draggable
+					parent.removeChild(draggableElement);
+
+					if (dropIndex < dragIndex) {
+						// Sposta verso l'alto
+						parent.insertBefore(draggableElement, dropzone);
+					} else {
+						// Sposta verso il basso
+						parent.insertBefore(draggableElement, dropzone.nextSibling);
+					}
+				}
+			}
+		}
+
+		//Add an event listenr to next and prev button
+		this.registerEvents = function(orchestrator) {
+			this.next.addEventListener('click', (e) => {
+				this.update(imagesAlbum, currentIndex)
+			});
+			//Check if the last index is divisble per 5, if not bring the index to the closeset multiple of 5 greater then currentIndex
+			this.prev.addEventListener('click', (e) => {
+				if (currentIndex % 5 != 0) {
+					while (currentIndex % 5 != 0) {
+						currentIndex++;
+					}
+				}
+				currentIndex = currentIndex - 10
+				this.update(imagesAlbum, currentIndex)
+			});
+		}
+
 	}
 
 
-
-	function ShowFullImage(_modalImageTitle, _modalImageToShow, _modalImageDescription, _modalComments, _modalCommentsBody, _modalNoComments, _commentForm, _commentMessage){
+	function ShowFullImage(_modalImageTitle, _modalImageToShow, _deleteButton, _modalImageDescription, _modalComments, _modalCommentsBody, _modalNoComments, _commentForm, _commentMessage) {
 		this.modal;
 		this.modalImageTitle = _modalImageTitle;
 		this.modalImageToShow = _modalImageToShow;
+		this.deleteButton = _deleteButton;
 		this.modalImageDescription = _modalImageDescription
 		this.modalComments = _modalComments;
 		this.modalCommentsBody = _modalCommentsBody;
@@ -426,127 +469,159 @@
 		this.commentForm = _commentForm;
 		this.commentMessage = _commentMessage;
 		this.imageId;
-		
+		this.isMine = false;
+
 		this.reset = function() {
 			this.modalComments.style.visibility = "hidden";
 			this.modalNoComments.style.visibility = "hidden";
+			this.deleteButton.style.visibility = "hidden";
+			if (this.isMine) {
+				this.deleteButton.style.visibility = "visible";
+			} else {
+				this.deleteButton.style.visibility = "hidden";
+			}
 		}
-		
-		
+
+
 		this.show = function(idImage, modalToOpen) {
-	     	this.modal = modalToOpen;
-	     	this.imageId = idImage;
-	     	var self = this;
-	      	makeCall("GET","SelectImage?imageId="+ idImage, null,function(req) {
-	          if (req.readyState == 4) {
-	          	var message = req.responseText;
-	          	if (req.status == 200) {
-	               currentImageShow = JSON.parse(req.responseText);
-	               makeCall("GET","ShowComments?imageId="+ idImage, null,function(req) {
-				   		if (req.readyState == 4) {
-				            	var message = req.responseText;
-				            if (req.status == 200) {
-				             	 var comments = JSON.parse(req.responseText);
-				            if(comments.length==0){
-								 showFullImage.noComments(currentImageShow);
-							}else{
-				             	 showFullImage.update(currentImageShow,comments);
-				             	 //openModal(modalToOpen);
-				                }
-				            }else if (req.status == 403) {
-			                  	window.location.href = req.getResponseHeader("Location");
-			                 	window.sessionStorage.removeItem('username');
-			                }else {
-				            	self.alert.textContent = message;
-				          	}
-				        }
-				    });   
-	           }else if (req.status == 403) {
-                  window.location.href = req.getResponseHeader("Location");
-                  window.sessionStorage.removeItem('username');
-               }else {
-	              //self.alert.textContent = message;
-	          	}
-	          }
-	        });
-	      }
-			
-		this.noComments = function(currentImageToShow){
+			this.modal = modalToOpen;
+			this.imageId = idImage;
+			this.isMine = false;
+			var self = this;
+			makeCall("GET", "SelectImage?imageId=" + idImage, null, function(req) {
+				if (req.readyState == 4) {
+					var message = req.responseText;
+					if (req.status == 200) {
+						currentImageShow = JSON.parse(req.responseText);
+						var usernameFromSession = sessionStorage.getItem("username").trim();
+						var userFromResponse = currentImageShow.user.trim();
+						if (userFromResponse === usernameFromSession) self.isMine = true;
+						self.reset();
+						makeCall("GET", "ShowComments?imageId=" + idImage, null, function(req) {
+							if (req.readyState == 4) {
+								var message = req.responseText;
+								if (req.status == 200) {
+									var comments = JSON.parse(req.responseText);
+									if (comments.length == 0) {
+										showFullImage.noComments(currentImageShow);
+									} else {
+										showFullImage.update(currentImageShow, comments);
+									}
+								} else if (req.status == 403) {
+									window.location.href = req.getResponseHeader("Location");
+									window.sessionStorage.removeItem('username');
+								} else {
+									self.alert.textContent = message;
+								}
+							}
+						});
+					} else if (req.status == 403) {
+						window.location.href = req.getResponseHeader("Location");
+						window.sessionStorage.removeItem('username');
+					} else {
+						//self.alert.textContent = message;
+					}
+				}
+			});
+		}
+
+		this.noComments = function(currentImageToShow) {
 			this.modalNoComments.style.visibility = "visible";
 			this.modalComments.style.visibility = "hidden";
-			
+
 			this.modalImageTitle.textContent = currentImageToShow.title;
 			this.modalImageDescription.textContent = currentImageToShow.description;
-			this.modalImageToShow.src="GetImage/"+currentImageShow.path
+			this.modalImageToShow.src = "GetImage/" + currentImageShow.path
+
 			openModal(modal);
 		}
-		
-		
-		this.update = function(currentImageToShow, comments){
+
+
+		this.update = function(currentImageToShow, comments) {
 			this.modalComments.style.visibility = "visible";
 			this.modalNoComments.style.visibility = "hidden";
-			
+
 			this.modalImageTitle.textContent = currentImageToShow.title;
 			this.modalImageDescription.textContent = currentImageToShow.description;
-			this.modalImageToShow.src="GetImage/"+currentImageShow.path
-			
+			this.modalImageToShow.src = "GetImage/" + currentImageShow.path
+
 			this.modalComments.innerHTML = "";
 			this.modalCommentsBody.innerHTML = "";
-			
+
 			self = this;
-			
+
 			comments.forEach(function(comment) { // self visible here, not this
-		        row = document.createElement("tr");
-		        destcell = document.createElement("td");
-		        destcell.textContent = comment.user;
-		        row.appendChild(destcell);
-		        datecell = document.createElement("td");
-		        datecell.textContent = comment.text;
-		        row.appendChild(datecell);
-		        self.modalComments.appendChild(row);
-	     	});
-	     	
-	     	openModal(modal);
+				row = document.createElement("tr");
+				destcell = document.createElement("td");
+				destcell.textContent = comment.user;
+				row.appendChild(destcell);
+				datecell = document.createElement("td");
+				datecell.textContent = comment.text;
+				row.appendChild(datecell);
+				self.modalComments.appendChild(row);
+			});
+
+			openModal(modal);
 		}
-	      
-	      
-	    this.registerEvents = function(orchestrator){
+
+
+		this.registerEvents = function(orchestrator) {
 			self = this;
 			this.commentForm.querySelector("input[type='submit']").addEventListener('click', (e) => {
 				var formToSend = e.target.closest("form");
-				var text= document.getElementById("textArea");
-				
-				if (formToSend.checkValidity() && text.value.length!=0 && text.value.length<180) {
-		          
-	 			  makeCall("POST", "AddComment?idImage=" + this.imageId +"&text=" + text.value , formToSend,function(req) {
-		              if (req.readyState == XMLHttpRequest.DONE) {
-		                var message = req.responseText; //error messagge 
-		              if (req.status == 200) {
-		                  self.show(self.imageId, self.modal);
-		              }else if (req.status == 403) {
-	                       window.location.href = req.getResponseHeader("Location");
-	                       window.sessionStorage.removeItem('username');
-	                  }else {
-		                   self.show(self.imageId, self.modal);
-			                }
-			              }
-			            }
-			          );
-			        }else{
-						if(text.value.length==0)
-							this.commentMessage.textContent="You cannot add a blank comment";
-						else
-							this.commentMessage.textContent="The comment size must be under 180";
+				var text = document.getElementById("textArea");
+
+				if (formToSend.checkValidity() && text.value.length != 0 && text.value.length < 180) {
+
+					makeCall("POST", "AddComment?idImage=" + this.imageId + "&text=" + text.value, formToSend, function(req) {
+						if (req.readyState == XMLHttpRequest.DONE) {
+							var message = req.responseText; //error messagge 
+							if (req.status == 200) {
+								self.show(self.imageId, self.modal);
+							} else if (req.status == 403) {
+								window.location.href = req.getResponseHeader("Location");
+								window.sessionStorage.removeItem('username');
+							} else {
+								self.show(self.imageId, self.modal);
+							}
+						}
 					}
+					);
+				} else {
+					if (text.value.length == 0)
+						this.commentMessage.textContent = "You cannot add a blank comment";
+					else
+						this.commentMessage.textContent = "The comment size must be under 180";
+				}
 			});
+
+			this.deleteButton.addEventListener('click', () => {
+				makeCall("GET", "DeleteImage?imageId=" + this.imageId, null, function(req) {
+					if (req.readyState == XMLHttpRequest.DONE) {
+						var message = req.responseText; //error messagge 
+						if (req.status == 200) {
+							self.quitModal();
+							orchestrator.refresh();
+						} else if (req.status == 403) {
+							window.location.href = req.getResponseHeader("Location");
+							window.sessionStorage.removeItem('username');
+						} else {
+
+						}
+					}
+				});
+			});
+
+
 		}
-	      
-		
-		
-		
-		
-		
-		
+
+		this.quitModal = function() {
+			const closeModalButton = document.querySelector('[data-close-button]');
+			if (closeModalButton) {
+				closeModalButton.click();
+			}
+		};
+
 	}
 
 
@@ -557,37 +632,32 @@
 		this.title = _imageTitle;
 		this.description = _imageDescription;
 		
-		this.reset = function() {
-		}
-		
 		this.registerEvents = function(orchestrator) {
-  			this.uploadForm.querySelector("input[type='submit']").addEventListener('click', (e) => {
+			this.uploadForm.querySelector("input[type='button']").addEventListener('click', (e) => {
 				var formToSend = e.target.closest("form");
-			       if (formToSend.checkValidity()) {
-			          var self = this;
-		 			  makeCall("POST", "UploadImage", formToSend,function(req) {
-			              if (req.readyState == XMLHttpRequest.DONE) {
-			                var message = req.responseText; //error messagge 
-			              if (req.status == 200) {
-			                   createAlbum.show();
-			              }else if (req.status == 403) {
-		                       window.location.href = req.getResponseHeader("Location");
-		                       window.sessionStorage.removeItem('username');
-		                  }else {
-							  console.error("Error response:", message);
-			                   self.alert.textContent = message;
-			                   self.show();
-				                }
-				              }
-				            }
-				          );
-				  }else{
-				     this.alert.textContent = "Required parameters for form missing";
+			    if (formToSend.checkValidity()) {
+			       	var self = this;
+		 		  	makeCall("POST", "UploadImage", formToSend,function(req) {
+						if (req.readyState == XMLHttpRequest.DONE) {
+		             		var message = req.responseText; //error messagge 
+			              	if (req.status == 200) {
+								createAlbum.show();
+			              	} else if (req.status == 403) {
+								window.location.href = req.getResponseHeader("Location");
+		                       	window.sessionStorage.removeItem('username');
+		                  	} else {
+						  		console.error("Error response:", message);
+								self.alert.textContent = message;
+			                   	self.show();
+							}
+						}
+					});
+				} else{
+			    	this.alert.textContent = "Required parameters for form missing";
 				}
-		     	 }); 
-		     }
+			}); 
+		}
 	}
-	
 	
 	
 	function openModal(modal) {
@@ -604,7 +674,6 @@
 	}
 
 
-
 	function PageOrchestrator() {
 		var alertContainer = document.getElementById("id_alert");
 
@@ -612,80 +681,81 @@
 			personalMessage = new PersonalMessage(
 				sessionStorage.getItem('username'),
 				document.getElementById("id_username"));
-			
+
 			personalMessage.show();
-			
+
 			userAlbums = new UserAlbums(
-			document.getElementById("id_emptyUserAlbumAlert"),
-			document.getElementById("id_userAlbumContainer"),
-			document.getElementById("id_userAlbumContainerBody"));
-			
-		otherAlbums = new OtherAlbums(
-			document.getElementById("id_emptyOtherAlbumAlert"),
-			document.getElementById("id_otherAlbumContainer"),
-			document.getElementById("id_otherAlbumContainerBody"));
+				document.getElementById("id_emptyUserAlbumAlert"),
+				document.getElementById("id_userAlbumContainer"),
+				document.getElementById("id_userAlbumContainerBody"));
 
-		createAlbum = new CreateAlbum(
-			document.getElementById("createalbummsg"),
-			document.getElementById("id_createAlbumForm"),
-			document.getElementById("id_createAlbumContainer"),
-			document.getElementById("id_createAlbumContainerBody"),
-			document.getElementById("id_albumTitle"));
-			
-		albumDetails = new ShowAlbum(
-			document.getElementById("id_emptyAlbumAlert"),
-			document.getElementById("id_albumContainer"),
-			document.getElementById("id_albumContainerBody"),
-			document.getElementById("next"),
-			document.getElementById("prev"));
-			
-		sendImage = new UploadImage(
-			document.getElementById("uploadimgmsg"),
-			document.getElementById("id_uploadImageForm"),
-			document.getElementById("id_imageFile"),
-			document.getElementById("id_imageTitle"),
-			document.getElementById("id_imageDescription"));
-			
-		showFullImage = new ShowFullImage(
-			document.getElementById("modalImageTitle"),
-			document.getElementById("modalImageToShow"),
-			document.getElementById("modalImageDescription"),
-			document.getElementById("modalComments"),
-			document.getElementById("modalCommentsBody"),
-			document.getElementById("modalNoComments"),
-			document.getElementById("id_createComment"),
-			document.getElementById("id_createcommentmsg"));
-			
+			otherAlbums = new OtherAlbums(
+				document.getElementById("id_emptyOtherAlbumAlert"),
+				document.getElementById("id_otherAlbumContainer"),
+				document.getElementById("id_otherAlbumContainerBody"));
 
-		createAlbum.registerEvents(this);
-		albumDetails.registerEvents(this);
-		sendImage.registerEvents(this);
-		showFullImage.registerEvents(this);
+			createAlbum = new CreateAlbum(
+				document.getElementById("createalbummsg"),
+				document.getElementById("id_createAlbumForm"),
+				document.getElementById("id_createAlbumContainer"),
+				document.getElementById("id_createAlbumContainerBody"),
+				document.getElementById("id_albumTitle"));
+
+			albumDetails = new ShowAlbum(
+				document.getElementById("id_emptyAlbumAlert"),
+				document.getElementById("id_albumContainer"),
+				document.getElementById("id_albumContainerBody"),
+				document.getElementById("next"),
+				document.getElementById("prev"));
+
+			sendImage = new UploadImage(
+				document.getElementById("uploadimgmsg"),
+				document.getElementById("id_uploadImageForm"),
+				document.getElementById("id_imageFile"),
+				document.getElementById("id_imageTitle"),
+				document.getElementById("id_imageDescription"));
+
+			showFullImage = new ShowFullImage(
+				document.getElementById("modalImageTitle"),
+				document.getElementById("modalImageToShow"),
+				document.getElementById("id_deleteImage"),
+				document.getElementById("modalImageDescription"),
+				document.getElementById("modalComments"),
+				document.getElementById("modalCommentsBody"),
+				document.getElementById("modalNoComments"),
+				document.getElementById("id_createComment"),
+				document.getElementById("id_createcommentmsg"));
 
 
-			
-		document.querySelector("a[href='Logout']").addEventListener('click', () => {
-	        window.sessionStorage.removeItem('username');
-	      })
-	      
-	    
-	    
-	      
-	    const closeModalButton = document.querySelector('[data-close-button]');
-	    closeModalButton.addEventListener('click', () => {
-    	const modalClose = closeModalButton.closest('.modal')
-    	closeModal(modalClose);
-  		})
-  		
-  		const overlay = document.getElementById('overlay')
-  		overlay.addEventListener('click', () => {
-  			const modals = document.querySelectorAll('.modal.active')
-  			modals.forEach(modal => {
-    			closeModal(modal)
-  			})
-		})
-		
-		
+			createAlbum.registerEvents(this);
+			albumDetails.registerEvents(this);
+			sendImage.registerEvents(this);
+			showFullImage.registerEvents(this);
+
+
+
+			document.querySelector("a[href='Logout']").addEventListener('click', () => {
+				window.sessionStorage.removeItem('username');
+			})
+
+
+
+
+			const closeModalButton = document.querySelector('[data-close-button]');
+			closeModalButton.addEventListener('click', () => {
+				const modalClose = closeModalButton.closest('.modal')
+				closeModal(modalClose);
+			})
+
+			const overlay = document.getElementById('overlay')
+			overlay.addEventListener('click', () => {
+				const modals = document.querySelectorAll('.modal.active')
+				modals.forEach(modal => {
+					closeModal(modal)
+				})
+			})
+
+
 		}
 
 
@@ -693,18 +763,16 @@
 			alertContainer.textContent = "";        // not null after creation of status change
 			userAlbums.reset();
 			userAlbums.show(function() {
-			userAlbums.autoclick(currentAlbum);
+				userAlbums.autoclick(currentAlbum);
 			}); // closure preserves visibility of this
 			otherAlbums.reset();
 			otherAlbums.show();
 			albumDetails.reset();
 			createAlbum.reset();
 			createAlbum.show();
-			sendImage.reset();
 			showFullImage.reset();
-			
+
 		};
 	}
-
 
 };

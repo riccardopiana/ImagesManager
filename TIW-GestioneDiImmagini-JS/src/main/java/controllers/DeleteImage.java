@@ -12,7 +12,6 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-import beans.Album;
 import beans.Image;
 import beans.User;
 import dao.ImageDAO;
@@ -31,10 +30,9 @@ public class DeleteImage extends HttpServlet {
 	}
 
 	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
-		String loginpath = getServletContext().getContextPath() + "/index.html";
 		HttpSession session = request.getSession();
 		if (session.isNew() || session.getAttribute("user") == null) {
-			response.sendRedirect(loginpath);
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 		
@@ -43,7 +41,8 @@ public class DeleteImage extends HttpServlet {
 		try {
 			imageId = Integer.parseInt(request.getParameter("imageId"));
 		} catch (NumberFormatException | NullPointerException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Incorrect imageId");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Inorrect imageId");
 			return;
 		}
 		
@@ -53,20 +52,23 @@ public class DeleteImage extends HttpServlet {
 		try {
 			image = imageDAO.findById(imageId);
 		} catch (SQLException e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Image not exist");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Image not exist");
 			return;
 		}
 		
 		User user = (User) session.getAttribute("user");
 		if (!image.getUser().equals(user.getEmail())) {
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "User not allowed");
+			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+			response.getWriter().println("User not allowed");
 			return;
 		}
 		
 		try {
 			imageDAO.deleteImage(imageId);
 		} catch (SQLException e){
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to delete image");
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Not possible to delete image");
 			return;
 		}
 
@@ -77,11 +79,10 @@ public class DeleteImage extends HttpServlet {
 				throw new Exception("Not possible to delete image");
 			}
 		} catch (Exception e) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing image path");
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Missinig image path");
 			return;
 		}
-		Album album = (Album) session.getAttribute("album");
-		response.sendRedirect(getServletContext().getContextPath() + "/GoToAlbum?albumId=" + album.getId());
 	}
 	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {

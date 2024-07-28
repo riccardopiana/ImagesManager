@@ -56,7 +56,10 @@
 						
 						<div id="id_emptyAlbumAlert"></div>
 						
-						
+						<div class="item">
+							<input type="button" name="next" value="Save order" id="id_saveOrder">
+						</div>
+
 						<div class="modal" id="modal">
         					
         					<div class="modal-header">
@@ -68,6 +71,10 @@
         						
         						<div>
         							<img id="modalImageToShow" height="150">
+        						</div>
+
+								<div>
+        							<button id="id_deleteImage">Delete Image</button>
         						</div>
         						
         						<div id="modalImageDescription"></div>
@@ -94,10 +101,7 @@
 										<form id="id_createComment" action="#">
 											<fieldset>
 											<div>Enter comment here</div>
-												<p>
-													<textarea rows = "4" cols = "40" id="textArea" required>
-	        										</textarea>
-												</p>
+												<p><textarea rows = "4" cols = "40" id="textArea" required></textarea></p>
 											<br> <input type="submit" value="Create Comment">
 											<p id="id_createcommentmsg"></p>
 											
@@ -137,14 +141,13 @@
 		<p>Complete the form to create a album:</p>
 		<form id="id_createAlbumForm" action="#">
 			<fieldset>
-				<p>
-					Title: <input id="id_albumTitle" type="text" name="title"/>
-				</p>
+				<p>Title: <input id="id_albumTitle" type="text" name="title"/></p>
 				<table id="id_createAlbumContainer">
 					<tbody id="id_createAlbumContainerBody">
 					</tbody>
 				</table>
-				<br> <input type="submit" value="Create Album">
+				<br>
+				<input type="button" value="Create Album" name="submit" class="submit">
 				<p id="createalbummsg"></p>
 			</fieldset>
 		</form>
@@ -159,7 +162,7 @@
 				<p><input id="id_imageFile" type="file" name="file"><br></p>
 				Title: <input id="id_imageTitle" type="text" name="title" required> <br><br> 
 				Description: <input id="id_imageDescription" type="text" name="description"><br><br> 
-				<input type="submit" value="Upload Image">
+				<input type="button" value="Upload Image" name="submit" class="submit">
 				<p id="uploadimgmsg"></p>
 			</fieldset>
 		</form>

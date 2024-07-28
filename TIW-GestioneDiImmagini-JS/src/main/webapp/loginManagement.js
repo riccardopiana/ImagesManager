@@ -4,7 +4,6 @@
 (function() { // avoid variables ending up in the global scope
 
 	document.getElementById("loginbutton").addEventListener('click', (e) => {
-		console.log("Login");
 		var form = e.target.closest("form");
 		if (form.checkValidity()) {
 			makeCall("POST", 'CheckLogin', e.target.closest("form"),
@@ -47,7 +46,7 @@
 		this.repeatPwd = document.querySelector('input[name=ripPassword]').value;
 		this.pwd = document.querySelector('input[name=signupPassword]').value;
 		console.log(this.validateEmail && repeatPwd === pwd && pwd.length > 5);
-		if (this.validateEmail && repeatPwd === pwd && pwd.length > 5) {
+		if (this.validateEmail && repeatPwd === pwd) {
 			if (form.checkValidity()) {
 				makeCall("POST", 'CheckRegistration', e.target.closest("form"),
 					function(x) {

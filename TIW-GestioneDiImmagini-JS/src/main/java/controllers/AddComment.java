@@ -33,76 +33,47 @@ public class AddComment extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		if (session.isNew() || session.getAttribute("user") == null) {
-			String loginpath = getServletContext().getContextPath() + "/index.html";
-			response.sendRedirect(loginpath);
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 		
-		Image image = new Image();
-		boolean isBadRequest = false;
-		User user =	(User) session.getAttribute("user");
 		String text = null;
-		Integer idImage = null;
-		
-		ImageDAO imageDAO=new ImageDAO(connection);
-		CommentDAO commentDAO=new CommentDAO(connection);
-		
 		try {
 			text = StringEscapeUtils.escapeJava(request.getParameter("text"));
-			idImage =Integer.parseInt(request.getParameter("idImage"));
-			
-		}catch (NumberFormatException | NullPointerException ex) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Incorrect or missing param values");
-			return;
-		}
-		
-		
-		try {
-			//If the text is blank throw an exception
-			if(text==null) {
-				isBadRequest=true;
-			}else if( text.equals("")) {
-				isBadRequest=true;
+			if (text == null || text.isEmpty()) {
+				throw new Exception("Missing text");
 			}
-			
-		}catch (NumberFormatException | NullPointerException e) {
-			isBadRequest = true;
-			e.printStackTrace();
-		}
-		if (isBadRequest) {
+		} catch (Exception e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("You cannot insert a blank comment");
+			response.getWriter().println("Missing text");
 			return;
 		}
 		
+		if (text.length()>180) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Text length max is 180");
+			return;
+		}
 		
+		Integer imageId = null;
 		try {
-			//check if the id of the image exists
-			image = imageDAO.findById(idImage);	
-		} catch (SQLException e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Incorrect param values for  comment");
+			imageId = Integer.parseInt(request.getParameter("idImage"));
+		} catch (NumberFormatException | NullPointerException e) {
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("ImageId not correct");
 			return;
 		}
 		
-		// If the text is more than 180 send an error message
-					if (text.length()>180) {
-						
-						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-						response.getWriter().println("Text length max is 180");
-						return;
-						}
-					try {
-					commentDAO.addComment(text, user.getEmail(), idImage);
-					}catch (SQLException e) {
-						response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-						response.getWriter().println("Not able to create a new comment");
-					}
-		
-		
-		
-		
+		User user = (User) session.getAttribute("user");
+		CommentDAO commentDAO = new CommentDAO(connection);
+				
+		try {
+			commentDAO.addComment(text, user.getEmail(), imageId);
+		}catch (SQLException e) {
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Not possible to add");
+			return;
+		}
 	}
 	
 	public void destroy() {

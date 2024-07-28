@@ -35,9 +35,13 @@ public class GetOtherAlbums extends HttpServlet {
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
+	protected void doGet(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
+		if (session.isNew() || session.getAttribute("user") == null) {
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
+			return;
+		}
+		
 		User user = (User) session.getAttribute("user");
 		AlbumDAO albumDAO = new AlbumDAO(connection);
 		List<Album> otherAlbums = new ArrayList<Album>();
@@ -49,8 +53,7 @@ public class GetOtherAlbums extends HttpServlet {
 				response.getWriter().println("Not possible to recover album");
 				return;
 		}
-		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MMM dd").create();
+		Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
 		String json = gson.toJson(otherAlbums);
 		
 		

@@ -14,7 +14,7 @@
 	</context-param>
 	<context-param>
 		<param-name>dbPassword</param-name>
-		<param-value>2310Prend</param-value>
+		<param-value>Giuseppino8!</param-value>
 	</context-param>
 	<context-param>
 		<param-name>dbDriver</param-name>
@@ -25,6 +25,6 @@
 	</welcome-file-list>
 	<context-param>
 		<param-name>uploadLocation</param-name>
-		<param-value>/Users/christianprendin/Desktop/TIW_Project/Immagini/</param-value>
+		<param-value>/home/riccardo/OneDrive/University/TECNOLOGIE INFORMATICHE PER IL WEB [Semestre 2]/TIW_Project/Immagini/</param-value>
 	</context-param>
 </web-app>

@@ -38,8 +38,7 @@ public class UploadImage extends HttpServlet {
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		if (session.isNew() || session.getAttribute("user") == null) {
-			String loginpath = getServletContext().getContextPath() + "/index.html";
-			response.sendRedirect(loginpath);
+			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
 		
@@ -58,13 +57,15 @@ public class UploadImage extends HttpServlet {
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file or title");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("Missing file or title");
 			return;
 		}
 
 		String contentType = filePart.getContentType();
 		if (!contentType.startsWith("image")) {
-			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "File format not permitted");
+			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+			response.getWriter().println("File format not permitted");
 			return;
 		}
 
@@ -81,14 +82,17 @@ public class UploadImage extends HttpServlet {
 			try {
 				imageDAO.addImage(title, description, fileName, user.getEmail());
 			} catch (SQLException e) {
-				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to upload image");
+				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+				response.getWriter().println("Not possible to upload image");
 				return;
 			}
 			request.getSession().setAttribute("user", user);
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
 			e.printStackTrace();
-			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while saving file");
+			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
+			response.getWriter().println("Error while saving file");
+			return;
 		}
 
 	}
