@@ -40,15 +40,15 @@ public class CreateAlbum extends HttpServlet {
 		List<Integer> idImage=new LinkedList<>();
 		
 		Map<String, String[]> allMap = request.getParameterMap();
-		System.out.print("parameters " + allMap.keySet().size());
+		//System.out.print("parameters " + allMap.keySet().size());
 		for (String key : allMap.keySet()) {
 			String[] strArr = (String[]) allMap.get(key);
 			for (String val : strArr) { 
 			    if(key.equals("title")) {
-			    	System.out.println(val + " was the map " + key + " was the key");
+			    	//System.out.println(val + " was the map " + key + " was the key");
 			        title= val;
 			     }else if(key.equals("id")) {
-			    	 System.out.println(val + " was the map " + key + " was the key");
+			    	 //System.out.println(val + " was the map " + key + " was the key");
 			    	 try {
 			        	idImage.add(Integer.parseInt(val));			        	
 			    	 }catch (NumberFormatException | NullPointerException ex) {

@@ -19,9 +19,6 @@ import javax.servlet.http.Part;
 
 import org.apache.commons.lang.StringEscapeUtils;
 
-import com.google.gson.Gson;
-import com.google.gson.GsonBuilder;
-
 import beans.User;
 import dao.*;
 import utils.ConnectionHandler;
@@ -40,6 +37,11 @@ public class UploadImage extends HttpServlet {
 
 	protected void doPost(HttpServletRequest request, HttpServletResponse response)throws ServletException, IOException {
 		HttpSession session = request.getSession();
+		if (session.isNew() || session.getAttribute("user") == null) {
+			String loginpath = getServletContext().getContextPath() + "/index.html";
+			response.sendRedirect(loginpath);
+			return;
+		}
 		
 		Part filePart = null;
 		String title = null;
@@ -55,15 +57,14 @@ public class UploadImage extends HttpServlet {
 				throw new Exception("Missing or empty title");
 			}
 		} catch (Exception e) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("Missing Datas");
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "Missing file or title");
 			return;
 		}
 
 		String contentType = filePart.getContentType();
 		if (!contentType.startsWith("image")) {
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			response.getWriter().println("File format not permitted");
+			response.sendError(HttpServletResponse.SC_BAD_REQUEST, "File format not permitted");
 			return;
 		}
 
@@ -80,25 +81,16 @@ public class UploadImage extends HttpServlet {
 			try {
 				imageDAO.addImage(title, description, fileName, user.getEmail());
 			} catch (SQLException e) {
-				response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-				response.getWriter().println("Not possible to upload image");
+				response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to upload image");
 				return;
 			}
+			request.getSession().setAttribute("user", user);
+			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (Exception e) {
-			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
-			response.getWriter().println("Error while saving file");
-			return;
+			e.printStackTrace();
+			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Error while saving file");
 		}
-		
-		response.setStatus(HttpServletResponse.SC_OK);
-		
-		Gson gson = new GsonBuilder()
-				   .setDateFormat("yyyy MMM dd").create();
-		String json = gson.toJson(file);
-		
-		response.setContentType("application/json");
-		response.setCharacterEncoding("UTF-8");
-		response.getWriter().write(json);
+
 	}
 	
 	public void destroy() {

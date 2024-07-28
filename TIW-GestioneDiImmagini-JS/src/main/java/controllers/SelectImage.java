@@ -6,6 +6,7 @@ import java.sql.SQLException;
 import java.util.ArrayList;
 import java.util.List;
 
+import javax.servlet.ServletContext;
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
 import javax.servlet.http.HttpServlet;
@@ -20,70 +21,65 @@ import beans.*;
 import dao.*;
 import utils.ConnectionHandler;
 
-@WebServlet("/SelectAlbum")
-public class SelectAlbum extends HttpServlet {
+@WebServlet("/SelectImage")
+public class SelectImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-       
-    public SelectAlbum() {
-        super();
-    }
-    
-    public void init() throws ServletException {
+	
+
+	public SelectImage() {
+		super();
+	}
+
+	public void init() throws ServletException {
+	
 		connection = ConnectionHandler.getConnection(getServletContext());
 	}
 
-	protected void doGet(HttpServletRequest request, HttpServletResponse response) 
+	protected void doGet(HttpServletRequest request, HttpServletResponse response)
 			throws ServletException, IOException {
-		
-		HttpSession session = request.getSession();
-		User user = (User) session.getAttribute("user");
-		if(user == null) {
-			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-			return;
-		}
-		
-		Integer albumId = null;
-		
+
+		Integer imageId = null;
 		try {
-			albumId = Integer.parseInt(request.getParameter("albumId"));
+			imageId = Integer.parseInt(request.getParameter("imageId"));
+				
 		} catch (NumberFormatException | NullPointerException e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			response.getWriter().println("Incorrect or missing param values");
 			return;
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
-		
-		
-		ImageDAO imagesDAO = new ImageDAO(connection);
-		List<Image> images = new ArrayList<Image>();
 
+		ImageDAO imagesDAO= new ImageDAO(connection);
+		Image image=null;
+		
 		try {
-			images = imagesDAO.findByAlbum(albumId);
-			 if (images.isEmpty()) {
-				 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
-				 response.getWriter().println("This album is empty!");
-				 return;
-			 }
+			image= imagesDAO.findById(imageId);
+			
+			if (image == null) {
+				response.setStatus(HttpServletResponse.SC_NOT_FOUND);
+				response.getWriter().println("Resource not found");
+				return;
+				
+			}
+			
 		} catch (SQLException e) {
 			e.printStackTrace();
-			
 			return;
 		}
-		
-		response.setStatus(HttpServletResponse.SC_OK);
 		Gson gson = new GsonBuilder()
 				   .setDateFormat("yyyy MMM dd").create();
-		String json = gson.toJson(images);
+		String json = gson.toJson(image);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);
+		
+	
 	}
 
-	protected void doPost(HttpServletRequest request, HttpServletResponse response) 
-			throws ServletException, IOException {
-		doGet(request, response);
-	}
-	
+
+
 	public void destroy() {
 		try {
 			ConnectionHandler.closeConnection(connection);
@@ -93,3 +89,6 @@ public class SelectAlbum extends HttpServlet {
 	}
 
 }
+
+
+

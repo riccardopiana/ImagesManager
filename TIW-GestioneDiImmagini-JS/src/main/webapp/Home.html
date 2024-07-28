@@ -55,6 +55,61 @@
 						</div>
 						
 						<div id="id_emptyAlbumAlert"></div>
+						
+						
+						<div class="modal" id="modal">
+        					
+        					<div class="modal-header">
+        						<div class="title" id="modalImageTitle"></div>
+        						<button data-close-button class="close-button">&times;</button>
+        					</div>
+        					
+        					<div class="modal-body">
+        						
+        						<div>
+        							<img id="modalImageToShow" height="150">
+        						</div>
+        						
+        						<div id="modalImageDescription"></div>
+        						
+        						<div>
+        						
+        							<table id="modalComments">
+										<thead>
+											<tr>
+												<th>User</th>
+												<th>Text</th>
+											</tr>
+										</thead>
+										<tbody id="modalCommentsBody">
+										</tbody>
+									</table>
+								
+								<div id="modalNoComments">There are no comments for this image</div>
+								
+        						</div>
+        						
+        						<div>
+        							<p>Complete the form to add a comment:</p>
+										<form id="id_createComment" action="#">
+											<fieldset>
+											<div>Enter comment here</div>
+												<p>
+													<textarea rows = "4" cols = "40" id="textArea" required>
+	        										</textarea>
+												</p>
+											<br> <input type="submit" value="Create Comment">
+											<p id="id_createcommentmsg"></p>
+											
+											</fieldset>
+										</form>
+        						</div>
+        						
+        					</div>
+        					
+    					</div>
+    					<div id="overlay"></div>
+
 
 					</div>
 				</td>
@@ -83,7 +138,7 @@
 		<form id="id_createAlbumForm" action="#">
 			<fieldset>
 				<p>
-					Title: <input id="id_albumTitle" type="text" name="title" required />
+					Title: <input id="id_albumTitle" type="text" name="title"/>
 				</p>
 				<table id="id_createAlbumContainer">
 					<tbody id="id_createAlbumContainerBody">
@@ -99,16 +154,13 @@
 
 	<div>
 		<p>Complete the form to upload a image:</p>
-		<form id="uploadImage" action="#" enctype="multipart/form-data">
+		<form id="id_uploadImageForm" action="#" enctype="multipart/form-data">
 			<fieldset>
-				<p>
-					<input id="image" type="file" name="file" required><br>
-				</p>
-				Title: <input id="imageTitle" type="text" name="title" required>
-				<br> <br> Description: <input id="imageDescription"
-					type="text" name="description"> <br> <br> <input
-					type="submit" value="Upload Image">
-				<p id="uploadMessage"></p>
+				<p><input id="id_imageFile" type="file" name="file"><br></p>
+				Title: <input id="id_imageTitle" type="text" name="title" required> <br><br> 
+				Description: <input id="id_imageDescription" type="text" name="description"><br><br> 
+				<input type="submit" value="Upload Image">
+				<p id="uploadimgmsg"></p>
 			</fieldset>
 		</form>
 	</div>

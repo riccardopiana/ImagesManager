@@ -95,8 +95,6 @@ public class ImageDAO {
 	
 	public List<Image> findByAlbum(Integer albumId) throws SQLException {
 		List<Image> images = new ArrayList<Image>();
-		
-		//Dubito sia giusto
 		String query = "SELECT Image.ID FROM Image INNER JOIN ImageOfAlbum ON Image.ID=ImageOfAlbum.Image WHERE Album = ? ORDER BY CreationDate desc";
 	    try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 	        pstatement.setLong(1, albumId);
@@ -107,7 +105,6 @@ public class ImageDAO {
 	            }
 	        }
 	    }
-		
 		return images;
 	}
 	
