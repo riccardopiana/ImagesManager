@@ -41,7 +41,6 @@ CREATE TABLE `Album` (
 
 LOCK TABLES `Album` WRITE;
 /*!40000 ALTER TABLE `Album` DISABLE KEYS */;
-INSERT INTO `Album` VALUES (1,'AlbumLazzaro','riccardo.piana.8@gmail.com','2024-07-11'),(2,'AlbumGay','mirko.pika@gmail.com','2024-07-11'),(6,'Prend Gay','riccardo.piana.8@gmail.com','2024-07-12'),(7,'gay','riccardo.piana.8@gmail.com','2024-07-12'),(8,'Prend stramegagay','riccardo.piana.8@gmail.com','2024-07-12'),(9,'Lazzaro','riccardo.piana.8@gmail.com','2024-07-12'),(10,'Seieieerio','riccardo.piana.8@gmail.com','2024-07-15'),(11,'Dio proco speriamo sia l\'ultimo','riccardo.piana.8@gmail.com','2024-07-15');
 /*!40000 ALTER TABLE `Album` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -100,7 +99,6 @@ CREATE TABLE `Image` (
 
 LOCK TABLES `Image` WRITE;
 /*!40000 ALTER TABLE `Image` DISABLE KEYS */;
-INSERT INTO `Image` VALUES (3,'Azienda gay prendini','2024-07-11','I prendini succhiano cazzi in compagnia','capannone.jpg','riccardo.piana.8@gmail.com'),(4,'Amaca Prend gay','2024-07-12','Qui christin succhia i cazzi','amaca.jpg','riccardo.piana.8@gmail.com'),(5,'Boh','2024-07-12','','pexels-heyho-7546217.jpg','riccardo.piana.8@gmail.com'),(6,'Immagine lazzara','2024-07-12','','pexels-matreding-12519374.jpg','riccardo.piana.8@gmail.com'),(9,'3','2024-07-15','','pexels-heyho-7546220.jpg','riccardo.piana.8@gmail.com'),(10,'4','2024-07-15','','pexels-ekaterina-bolovtsova-6077054.jpg','riccardo.piana.8@gmail.com'),(11,'5','2024-07-15','','pexels-eugene-golovesov-1810803-19291259.jpg','riccardo.piana.8@gmail.com'),(12,'6','2024-07-15','','pexels-heyho-7587782.jpg','riccardo.piana.8@gmail.com'),(13,'7','2024-07-15','','pexels-heyho-7587833.jpg','riccardo.piana.8@gmail.com');
 /*!40000 ALTER TABLE `Image` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -114,10 +112,11 @@ DROP TABLE IF EXISTS `ImageOfAlbum`;
 CREATE TABLE `ImageOfAlbum` (
   `Album` int NOT NULL,
   `Image` int NOT NULL,
+  PRIMARY KEY (`Album`,`Image`),
   KEY `fk_ImageOfAlbum_1_idx` (`Image`),
   KEY `fk_ImageOfAlbum_2_idx` (`Album`),
   CONSTRAINT `fk_ImageOfAlbum_1` FOREIGN KEY (`Image`) REFERENCES `Image` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE,
-  CONSTRAINT `fk_ImageOfAlbum_2` FOREIGN KEY (`Album`) REFERENCES `Album` (`ID`) ON UPDATE CASCADE
+  CONSTRAINT `fk_ImageOfAlbum_2` FOREIGN KEY (`Album`) REFERENCES `Album` (`ID`) ON DELETE CASCADE ON UPDATE CASCADE
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4 COLLATE=utf8mb4_0900_ai_ci;
 /*!40101 SET character_set_client = @saved_cs_client */;
 
@@ -127,7 +126,6 @@ CREATE TABLE `ImageOfAlbum` (
 
 LOCK TABLES `ImageOfAlbum` WRITE;
 /*!40000 ALTER TABLE `ImageOfAlbum` DISABLE KEYS */;
-INSERT INTO `ImageOfAlbum` VALUES (6,3),(7,4),(8,3),(8,4),(8,5),(9,6),(10,3),(10,4),(10,5),(10,6),(10,9),(11,3),(11,4),(11,5),(11,6),(11,9),(11,10),(11,11),(11,12),(11,13);
 /*!40000 ALTER TABLE `ImageOfAlbum` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -153,7 +151,7 @@ CREATE TABLE `User` (
 
 LOCK TABLES `User` WRITE;
 /*!40000 ALTER TABLE `User` DISABLE KEYS */;
-INSERT INTO `User` VALUES ('aldo.pinelli@gmail.com','HabibiHabebti','Aldo','Pinelli'),('christian.prendin@gmail.com','pianaGay','Christian','Prendin'),('mirko.pika@gmail.com','prendciucciaicazzi','Mirko','Pika'),('riccardo.piana.8@gmail.com','prendGay','Riccardo','Pianalto');
+INSERT INTO `User` VALUES ('aldo.pinelli@gmail.com','HabibiHabebti','Aldo','Pinelli'),('christian.prendin@gmail.com','piana','Christian','Prendin'),('mirko.pika@gmail.com','abruzzo','Mirko','Pika'),('riccardo.piana.8@gmail.com','prend','Riccardo','Pianalto');
 /*!40000 ALTER TABLE `User` ENABLE KEYS */;
 UNLOCK TABLES;
 
@@ -170,4 +168,4 @@ UNLOCK TABLES;
 /*!40101 SET COLLATION_CONNECTION=@OLD_COLLATION_CONNECTION */;
 /*!40111 SET SQL_NOTES=@OLD_SQL_NOTES */;
 
--- Dump completed on 2024-07-18 11:34:27
+-- Dump completed on 2024-07-29 22:57:53
