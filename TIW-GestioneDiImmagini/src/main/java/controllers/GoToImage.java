@@ -67,7 +67,6 @@ public class GoToImage extends HttpServlet {
 		
 		try {
 			image = imageDAO.findById(imageId);
-			session.setAttribute("image", image);
 			if (image == null) {
 				response.sendError(HttpServletResponse.SC_NOT_FOUND, "Image not found");
 				return;
@@ -77,13 +76,13 @@ public class GoToImage extends HttpServlet {
 			return;
 		}
 		
+		session.setAttribute("image", image);
 		User user = (User) session.getAttribute("user");
 		if (image.getUser().equals(user.getEmail())) {
 			owner = 1;
 		}
 		
 		try {
-			session.setAttribute("image", image);
 			comments = commentDAO.findByImage(imageId);
 		} catch (SQLException e) {
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR, "Not possible to recover comments");
