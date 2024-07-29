@@ -45,6 +45,7 @@
 								self.alert.textContent = "You haven't created any album yet!";
 								return;
 							}
+							self.alert.textContent = "";
 							self.update(albumsToShow); // self visible by closure
 							if (next) next(); // show the default element of the list if present
 
@@ -267,6 +268,7 @@
 							var message = req.responseText; //error messagge 
 							if (req.status == 200) {
 								createAlbum.show();
+								userAlbums.reset();
 								userAlbums.show();
 							} else if (req.status == 403) {
 								window.location.href = req.getResponseHeader("Location");
@@ -509,7 +511,7 @@
 				console.log(imageMap);
 
 				// Costruire la stringa query
-				let query = "albumid=" + this.albumId + "&";
+				let query = this.albumId + "&";
 				imageMap.forEach((value, key) => {
 					query += `id=${key}-${value}&`;
 				});
@@ -519,8 +521,23 @@
 				}
 
 				console.log(query);
-
-
+				
+				var self = this;
+				
+				makeCall("POST", "ReorderAlbum?albumId=" + query, null,
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							albumDetails.reset();
+							albumDetails.show(self.albumId);
+						} else if (req.status == 403) {
+							window.location.href = req.getResponseHeader("Location");
+							window.sessionStorage.removeItem('username');
+						} else {
+						}
+					}
+				});
 			});
 		}
 	}

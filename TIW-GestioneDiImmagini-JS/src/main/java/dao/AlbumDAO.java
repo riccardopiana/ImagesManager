@@ -11,6 +11,7 @@ import java.util.Map;
 
 import beans.Album;
 import beans.Image;
+import utils.ImageComparator;
 
 public class AlbumDAO {
 	private Connection connection;
@@ -35,9 +36,11 @@ public class AlbumDAO {
 			query = "SET @last_album_id = LAST_INSERT_ID()";
 			statement.executeUpdate(query);
 			
+			images.sort(new ImageComparator());
+			
 			query = "INSERT ImageOfAlbum (Album, Image, Position, User) VALUES ";
 			for (Image image : images) {
-				query += "(@last_album_id, " + image.getId() + ", '" + image.getCreationDate().toString() + ", '" + userEmail + "), ";
+				query += "(@last_album_id, " + image.getId() + ", '" + images.indexOf(image) + "', 'default'), ";
 			}
 			query = query.substring(0, query.length()-2);
 			statement.executeUpdate(query);
@@ -128,18 +131,41 @@ public class AlbumDAO {
 		}
 		return totalPages;
 	}
+	
 
 	public void reorderAlbum(Integer albumId, Map<Integer, Image> imagesOrder, String userEmail) throws SQLException{
+		boolean found = true;
+		String query = "SELECT * FROM ImageOfAlbum WHERE User = ? AND Album = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setString(1, userEmail);
+			pstatement.setLong(2, albumId);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.next()) {
+					found = false;
+				}
+			}
+		}
 		try {
 			connection.setAutoCommit(false);
-			String query = "";
-			for (Integer position : imagesOrder.keySet()) {
-				query = "UPDATE ImageOfAlbum SET position = ? WHERE album = " + albumId + "AND image = ? AND user = " + userEmail;
-				try (PreparedStatement pstatement = connection.prepareStatement(query);) {
-					pstatement.setLong(1, albumId);
-					pstatement.setLong(2, imagesOrder.get(position).getId());
-					pstatement.executeUpdate();
+			if (found) {
+				query = "";
+				for (Integer position : imagesOrder.keySet()) {
+					query = "UPDATE ImageOfAlbum SET position = ? WHERE album = " + albumId + " AND image = ? AND user = '" + userEmail + "'";
+					try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+						pstatement.setLong(1, position);
+						pstatement.setLong(2, imagesOrder.get(position).getId());
+						pstatement.executeUpdate();
+					}
 				}
+			} else {
+				Statement statement = connection.createStatement();
+				query = "";
+				query = "INSERT ImageOfAlbum (Album, Image, Position, User) VALUES ";
+				for (Integer position : imagesOrder.keySet()) {
+					query += "(" + albumId + ", " + imagesOrder.get(position).getId() + ", '" + position + "', '" + userEmail + "'), ";
+				}
+				query = query.substring(0, query.length()-2);
+				statement.executeUpdate(query);
 			}
 			connection.commit();
 		} catch (SQLException e) {

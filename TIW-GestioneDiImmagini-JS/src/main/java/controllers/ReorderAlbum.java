@@ -38,6 +38,8 @@ public class ReorderAlbum extends HttpServlet {
 		Integer albumId = null;
 		Map<Integer, Image> imagesOrder = new HashMap<Integer, Image>();
 		ImageDAO imageDAO = new ImageDAO(connection);
+
+		User user = (User) session.getAttribute("user");
 		
 		try {
 			albumId = Integer.parseInt(request.getParameter("albumId"));
@@ -52,7 +54,7 @@ public class ReorderAlbum extends HttpServlet {
 		
 		try {
 			albumDAO.findById(albumId);
-			imagesOfAlbum = imageDAO.findByAlbum(albumId);
+			imagesOfAlbum = imageDAO.findByAlbum(albumId, user.getEmail());
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
     		response.getWriter().println("Not possible to recove album");
@@ -71,7 +73,7 @@ public class ReorderAlbum extends HttpServlet {
 		    	
 			    if(key.equals("id")) {
 			    	try {
-			    		id = Integer.parseInt(val.substring(0, val.indexOf("-") - 1));
+			    		id = Integer.parseInt(val.substring(0, val.indexOf("-")));
 			    		position = Integer.parseInt(val.substring(val.indexOf("-") + 1, val.length()));
 			    	} catch (NumberFormatException | NullPointerException ex) {
 			    		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
@@ -80,22 +82,26 @@ public class ReorderAlbum extends HttpServlet {
 			    	}
 			    	try {
 			    		image = imageDAO.findById(id);
-			    		if (!imagesOfAlbum.contains(image)) {
+			    		Boolean found = false;
+			    		for (Image i : imagesOfAlbum) {
+			    			if (i.getId() == image.getId()) {
+			    				found = true;
+			    			}
+			    		}
+			    		if (!found) {
 			    			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-							response.getWriter().println("Images of other album");
-							return;
+				    		response.getWriter().println("Images not of this album");
+				    		return;
 			    		}
 			    	} catch (Exception e) {
 			    		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
 			    		response.getWriter().println("Not possible to recove images");
 			    		return;
 			    	}
-			   		imagesOrder.put(position, image);
+			   		imagesOrder.put(imagesOfAlbum.size() - 1 - position, image);
 		    	}
 			}
 		}
-		
-		User user = (User) session.getAttribute("user");
 		
 		try {
 			albumDAO.reorderAlbum(albumId, imagesOrder, user.getEmail());

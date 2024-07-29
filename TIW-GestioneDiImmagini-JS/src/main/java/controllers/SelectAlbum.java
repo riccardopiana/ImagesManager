@@ -39,7 +39,7 @@ public class SelectAlbum extends HttpServlet {
 			response.setStatus(HttpServletResponse.SC_FORBIDDEN);
 			return;
 		}
-		
+		User user = (User) session.getAttribute("user");
 		Integer albumId = null;
 		
 		try {
@@ -54,7 +54,7 @@ public class SelectAlbum extends HttpServlet {
 		List<Image> images = new ArrayList<Image>();
 		
 		try {
-			images = imagesDAO.findByAlbum(albumId);
+			images = imagesDAO.findByAlbum(albumId, user.getEmail());
 			 if (images == null) {
 				 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				 response.getWriter().println("This album is empty!");

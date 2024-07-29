@@ -68,14 +68,31 @@ public class ImageDAO {
 		}
 	}
 
-	public List<Image> findByAlbum(Integer albumId) throws SQLException {
+	public List<Image> findByAlbum(Integer albumId, String userEmail) throws SQLException {
+		boolean found = true;
+		String query = "SELECT * FROM ImageOfAlbum WHERE User = ? AND Album = ?";
+		try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+			pstatement.setString(1, userEmail);
+			pstatement.setLong(2, albumId);
+			try (ResultSet result = pstatement.executeQuery();) {
+				if (!result.next()) {
+					found = false;
+				}
+			}
+		}
+		
 		List<Image> images = new ArrayList<Image>();
-		String query = "SELECT Image.ID FROM Image JOIN ImageOfAlbum ON Image.ID=ImageOfAlbum.Image WHERE Album = ? ORDER BY Position desc";
+		query = "SELECT Image FROM ImageOfAlbum WHERE Album = ? AND User = ? ORDER BY Position desc";
 	    try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 	        pstatement.setLong(1, albumId);
+	        if (found) {
+	        	pstatement.setString(2, userEmail);
+	        } else {
+	        	pstatement.setString(2, "default");
+	        }
 	        try (ResultSet result = pstatement.executeQuery();) {
 	            while (result.next()) {
-	                Image image = this.findById(result.getInt("ID"));
+	                Image image = this.findById(result.getInt("Image"));
 	                images.add(image);
 	            }
 	        }
