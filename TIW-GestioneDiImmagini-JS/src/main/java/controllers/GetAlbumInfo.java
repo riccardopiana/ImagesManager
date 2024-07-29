@@ -3,8 +3,6 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.ArrayList;
-import java.util.List;
 
 import javax.servlet.ServletException;
 import javax.servlet.annotation.WebServlet;
@@ -20,12 +18,12 @@ import beans.*;
 import dao.*;
 import utils.ConnectionHandler;
 
-@WebServlet("/SelectAlbum")
-public class SelectAlbum extends HttpServlet {
+@WebServlet("/GetAlbumInfo")
+public class GetAlbumInfo extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
        
-    public SelectAlbum() {
+    public GetAlbumInfo() {
         super();
     }
     
@@ -50,12 +48,13 @@ public class SelectAlbum extends HttpServlet {
 			return;
 		}
 		
-		ImageDAO imagesDAO = new ImageDAO(connection);
-		List<Image> images = new ArrayList<Image>();
+		
+		Album album = new Album();
+		AlbumDAO albumDAO = new AlbumDAO(connection);
 		
 		try {
-			images = imagesDAO.findByAlbum(albumId);
-			 if (images == null) {
+			album = albumDAO.findById(albumId);
+			 if (album == null) {
 				 response.setStatus(HttpServletResponse.SC_NOT_FOUND);
 				 response.getWriter().println("This album is empty!");
 				 return;
@@ -68,7 +67,7 @@ public class SelectAlbum extends HttpServlet {
 		
 		response.setStatus(HttpServletResponse.SC_OK);
 		Gson gson = new GsonBuilder().setDateFormat("yyyy MMM dd").create();
-		String json = gson.toJson(images);
+		String json = gson.toJson(album);
 		response.setContentType("application/json");
 		response.setCharacterEncoding("UTF-8");
 		response.getWriter().write(json);

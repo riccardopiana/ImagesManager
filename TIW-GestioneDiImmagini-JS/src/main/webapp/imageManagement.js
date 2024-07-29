@@ -2,7 +2,7 @@
 
 	// page components
 	let userAlbums, otherAlbums, createAlbum,
-	pageOrchestrator = new PageOrchestrator(); // main controller
+		pageOrchestrator = new PageOrchestrator(); // main controller
 
 	window.addEventListener("load", () => {
 		if (sessionStorage.getItem("username") == null) {
@@ -15,7 +15,7 @@
 
 
 	// Constructors of view components
-	
+
 	function PersonalMessage(_username, messagecontainer) {
 		this.username = _username;
 		this.show = function() {
@@ -95,17 +95,17 @@
 			});
 			this.listcontainer.style.visibility = "visible";
 		}
-		
+
 		this.autoclick = function(albumId) {
-	      var e = new Event("click");
-	      var selector = "a[albumid='" + albumId + "']";
-	      var anchorToClick =  // the first mission or the mission with id = missionId
-	        (albumId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
-	      if (anchorToClick) anchorToClick.dispatchEvent(e);
-	    }
+			var e = new Event("click");
+			var selector = "a[albumid='" + albumId + "']";
+			var anchorToClick =  // the first mission or the mission with id = missionId
+				(albumId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
+			if (anchorToClick) anchorToClick.dispatchEvent(e);
+		}
 	}
-	
-	
+
+
 	function OtherAlbums(_alert, _listcontainer, _listcontainerbody) {
 		this.alert = _alert;
 		this.listcontainer = _listcontainer;
@@ -180,18 +180,18 @@
 	}
 
 
-	function CreateAlbum(_alert, _form, _listcontainer, _listcontainerbody, _albumtitle){
+	function CreateAlbum(_alert, _form, _listcontainer, _listcontainerbody, _albumtitle) {
 		this.alert = _alert;
 		this.form = _form;
 		this.listcontainer = _listcontainer;
 		this.listcontainerbody = _listcontainerbody;
 		this.albumtitle = _albumtitle;
-		
+
 		this.reset = function() {
 			this.listcontainer.style.visibility = "hidden";
 		}
-		
-		this.show = function(){
+
+		this.show = function() {
 			var self = this;
 			makeCall("GET", "GetUserImages", null,
 				function(req) {
@@ -213,9 +213,9 @@
 						}
 					}
 				}
-			);	
+			);
 		}
-		
+
 		this.update = function(userImages) {
 			var row, checkbox, imagetitle, datecell, input, linkcell, anchor;
 			this.listcontainerbody.innerHTML = ""; // empty the table body
@@ -223,15 +223,15 @@
 			var self = this;
 			userImages.forEach(function(image) { // self visible here, not this
 				row = document.createElement("tr");
-				
+
 				checkbox = document.createElement("td");
 				input = document.createElement("INPUT");
 				input.setAttribute("type", "checkbox")
-				input.setAttribute("value",image.id)
-				input.setAttribute("name","id")
+				input.setAttribute("value", image.id)
+				input.setAttribute("name", "id")
 				checkbox.appendChild(input);
 				row.appendChild(checkbox);
-				
+
 				imagetitle = document.createElement("td");
 				imagetitle.textContent = image.title;
 				row.appendChild(imagetitle);
@@ -240,67 +240,79 @@
 			});
 			this.listcontainerbody.style.visibility = "visible";
 		}
-		
-		
+
+
 		this.registerEvents = function(orchestrator) {
-			var params=[];
+			var params = [];
 			//Get all the checkbox checked which each one from the form has the idImage as value 
-  		 	this.form.querySelector("input[type='button']").addEventListener('click', (e) => {
- 			let values = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
-    			.map(item => item.value);
-	    		for(let i=0;i<values.length;i++){
-					params[i]="id="+parseInt(values[i]);
+			this.form.querySelector("input[type='button']").addEventListener('click', (e) => {
+				let values = Array.from(document.querySelectorAll('input[type=checkbox]:checked'))
+					.map(item => item.value);
+				for (let i = 0; i < values.length; i++) {
+					params[i] = "id=" + parseInt(values[i]);
 				}
 				var str;
-				for(let n=0;n<params.length;n++){
-					if(n==0){
-						str=params[n]+"&";
-					} else{
-						str+=params[n]+"&";
+				for (let n = 0; n < params.length; n++) {
+					if (n == 0) {
+						str = params[n] + "&";
+					} else {
+						str += params[n] + "&";
 					}
 				}
-	       		var formToSend = e.target.closest("form");
+				var formToSend = e.target.closest("form");
 				if (formToSend.checkValidity()) {
-		        	var self = this;
-	 				makeCall("POST", "CreateAlbumJS?title=" + self.albumtitle.value + "&" + str, formToSend,function(req) {
+					var self = this;
+					makeCall("POST", "CreateAlbumJS?title=" + self.albumtitle.value + "&" + str, formToSend, function(req) {
 						if (req.readyState == 4) {
-				           	var message = req.responseText; //error messagge 
-					           	if (req.status == 200) {
-					               	createAlbum.show();
-					               	userAlbums.show();
-				            	} else if (req.status == 403) {
-			                    	window.location.href = req.getResponseHeader("Location");
-			                    	window.sessionStorage.removeItem('username');
-				                } else {
-					               	self.alert.textContent = message;
-					               	self.show();
-						       	}
-					      	}
-						});
-				}else{
-			    	this.alert.textContent = "Required parameters for form missing";
+							var message = req.responseText; //error messagge 
+							if (req.status == 200) {
+								createAlbum.show();
+								userAlbums.show();
+							} else if (req.status == 403) {
+								window.location.href = req.getResponseHeader("Location");
+								window.sessionStorage.removeItem('username');
+							} else {
+								self.alert.textContent = message;
+								self.show();
+							}
+						}
+					});
+				} else {
+					this.alert.textContent = "Required parameters for form missing";
 				}
-			}); 
-		}   
+			});
+		}
 	}
 
 
-	function ShowAlbum(_alert, _listcontainer, _listcontainerbody, _next, _prev) {
+	function ShowAlbum(_alert, _listcontainer, _listcontainerbody, _next, _prev, _saveOrderButton, _albumCreator, _albumTitle) {
 		this.alert = _alert;
 		this.listcontainer = _listcontainer;
 		this.listcontainerbody = _listcontainerbody;
 		this.next = _next;
 		this.prev = _prev;
+		this.saveOrderButton = _saveOrderButton;
+		this.albumCreator = _albumCreator;
+		this.albumTitle = _albumTitle;
+		this.albumId;
+		this.pageIndex = 0;
+
 
 		this.reset = function() {
 			this.listcontainer.style.visibility = "hidden";
 			this.next.style.visibility = "hidden";
 			this.prev.style.visibility = "hidden";
+			this.saveOrderButton.style.visibility = "hidden";
+			this.albumCreator.textContent = "";
+			this.albumTitle.textContent = "";
+			this.pageIndex = 0;
 		}
 
 		var imagesAlbum;
 		this.show = function(albumid) {
 			var self = this;
+			this.albumId = albumid;
+			this.reset();
 			makeCall("GET", "SelectAlbum?albumId=" + albumid, null, function(req) {
 				if (req.readyState == 4) {
 					var message = req.responseText;
@@ -308,17 +320,17 @@
 						imagesAlbum = JSON.parse(req.responseText);
 						if (imagesAlbum.length == 0) {
 							self.alert.textContent = "No images for this album!";
+							self.reset();
 							return;
 						}
 						self.alert.textContent = "";
 						self.update(imagesAlbum, 0);//Pass the index 0, initialize the table
-
 					} else if (req.status == 403) {
 						window.location.href = req.getResponseHeader("Location");
 						window.sessionStorage.removeItem('username');
 					} else {
 						self.alert.textContent = message;
-						self.listcontainer.style.visibility = "hidden";
+						self.reset();
 					}
 				}
 			}
@@ -364,7 +376,7 @@
 
 					// Imposta la cella come draggable
 					destcell.setAttribute("draggable", "true");
-					destcell.setAttribute("id", "cell-" + index);
+					destcell.setAttribute("id", index);
 
 					// Gestori di eventi per il drag and drop sulla cella
 					destcell.addEventListener('dragstart', handleDragStart);
@@ -379,6 +391,8 @@
 
 			currentIndex = index;
 			this.listcontainer.style.visibility = "visible";
+			this.saveOrderButton.style.visibility = "visible";
+
 			if (indexMax < imagesToShow.length) {
 				this.next.style.visibility = "visible";
 			} else {
@@ -390,7 +404,30 @@
 			} else {
 				this.prev.style.visibility = "hidden";
 			}
-		}
+
+			makeCall("GET", "GetAlbumInfo?albumId=" + this.albumId, null,
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var albumsToShow = JSON.parse(req.responseText);
+							self.albumCreator.textContent = albumsToShow.creator;
+							self.albumTitle.textContent = albumsToShow.title;
+
+						} else if (req.status == 403) {
+							window.location.href = req.getResponseHeader("Location");
+							window.sessionStorage.removeItem('username');
+						} else {
+							self.albumCreator.textContent = "";
+							self.albumTitle.textContent = "";
+						}
+					}
+				});
+		};
+
+
+
+
 
 		// Gestori di eventi per il drag and drop
 		function handleDragStart(e) {
@@ -440,7 +477,8 @@
 		//Add an event listenr to next and prev button
 		this.registerEvents = function(orchestrator) {
 			this.next.addEventListener('click', (e) => {
-				this.update(imagesAlbum, currentIndex)
+				this.update(imagesAlbum, currentIndex);
+				this.pageIndex++;
 			});
 			//Check if the last index is divisble per 5, if not bring the index to the closeset multiple of 5 greater then currentIndex
 			this.prev.addEventListener('click', (e) => {
@@ -451,10 +489,42 @@
 				}
 				currentIndex = currentIndex - 10
 				this.update(imagesAlbum, currentIndex)
+				this.pageIndex--;
+			});
+
+			this.saveOrderButton.addEventListener('click', (e) => {
+				const imageMap = new Map();
+				const cells = document.querySelectorAll("#id_albumContainerBody td");
+				let orderIndex = 0; // Contatore per le celle con immagini
+
+				cells.forEach((cell) => {
+					const image = cell.querySelector("img");
+					if (image) {
+						const imageId = image.getAttribute("idImage");
+						imageMap.set(imageId, orderIndex + 5 * this.pageIndex);
+						orderIndex++;
+					}
+				});
+
+				console.log(imageMap);
+
+				// Costruire la stringa query
+				let query = "albumid=" + this.albumId + "&";
+				imageMap.forEach((value, key) => {
+					query += `id=${key}-${value}&`;
+				});
+				// Rimuovi l'ultimo ' & ' se esiste
+				if (query.length > 0) {
+					query = query.slice(0, -1);
+				}
+
+				console.log(query);
+
+
 			});
 		}
-
 	}
+
 
 
 	function ShowFullImage(_modalImageTitle, _modalImageToShow, _deleteButton, _modalImageDescription, _modalComments, _modalCommentsBody, _modalNoComments, _commentForm, _commentMessage) {
@@ -567,7 +637,7 @@
 
 		this.registerEvents = function(orchestrator) {
 			self = this;
-			this.commentForm.querySelector("input[type='submit']").addEventListener('click', (e) => {
+			document.getElementById("id_createCommentButton").addEventListener('click', (e) => {
 				var formToSend = e.target.closest("form");
 				var text = document.getElementById("textArea");
 
@@ -625,52 +695,52 @@
 	}
 
 
-	function UploadImage(_alert, _uploadForm, _imageFile, _imageTitle, _imageDescription){
+	function UploadImage(_alert, _uploadForm, _imageFile, _imageTitle, _imageDescription) {
 		this.alert = _alert;
 		this.uploadForm = _uploadForm;
 		this.file = _imageFile;
 		this.title = _imageTitle;
 		this.description = _imageDescription;
-		
+
 		this.registerEvents = function(orchestrator) {
 			this.uploadForm.querySelector("input[type='button']").addEventListener('click', (e) => {
 				var formToSend = e.target.closest("form");
-			    if (formToSend.checkValidity()) {
-			       	var self = this;
-		 		  	makeCall("POST", "UploadImage", formToSend,function(req) {
+				if (formToSend.checkValidity()) {
+					var self = this;
+					makeCall("POST", "UploadImage", formToSend, function(req) {
 						if (req.readyState == XMLHttpRequest.DONE) {
-		             		var message = req.responseText; //error messagge 
-			              	if (req.status == 200) {
+							var message = req.responseText; //error messagge 
+							if (req.status == 200) {
 								createAlbum.show();
-			              	} else if (req.status == 403) {
+							} else if (req.status == 403) {
 								window.location.href = req.getResponseHeader("Location");
-		                       	window.sessionStorage.removeItem('username');
-		                  	} else {
-						  		console.error("Error response:", message);
+								window.sessionStorage.removeItem('username');
+							} else {
+								console.error("Error response:", message);
 								self.alert.textContent = message;
-			                   	self.show();
+								self.show();
 							}
 						}
 					});
-				} else{
-			    	this.alert.textContent = "Required parameters for form missing";
+				} else {
+					this.alert.textContent = "Required parameters for form missing";
 				}
-			}); 
+			});
 		}
 	}
-	
-	
+
+
 	function openModal(modal) {
-  		if (modal == null) return
-  		modal.classList.add('active')
-  		overlay.classList.add('active')
+		if (modal == null) return
+		modal.classList.add('active')
+		overlay.classList.add('active')
 	}
-	
-	
+
+
 	function closeModal(modal) {
-  		if (modal == null) return
-  		modal.classList.remove('active')
-  		overlay.classList.remove('active')
+		if (modal == null) return
+		modal.classList.remove('active')
+		overlay.classList.remove('active')
 	}
 
 
@@ -706,7 +776,10 @@
 				document.getElementById("id_albumContainer"),
 				document.getElementById("id_albumContainerBody"),
 				document.getElementById("next"),
-				document.getElementById("prev"));
+				document.getElementById("prev"),
+				document.getElementById("id_saveOrder"),
+				document.getElementById("id_albumCreatorName"),
+				document.getElementById("id_displayAlbumTitle"));
 
 			sendImage = new UploadImage(
 				document.getElementById("uploadimgmsg"),
@@ -775,4 +848,4 @@
 		};
 	}
 
-};
+}
