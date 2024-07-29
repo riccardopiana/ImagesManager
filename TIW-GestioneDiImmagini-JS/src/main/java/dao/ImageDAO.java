@@ -68,34 +68,9 @@ public class ImageDAO {
 		}
 	}
 
-	public List<Image> findFiveImages(Integer albumId, int page) throws SQLException {
-		List<Image> images = new ArrayList<Image>();
-		int count = 0;
-		String query = "SELECT Image.ID FROM Image INNER JOIN ImageOfAlbum ON Image.ID=ImageOfAlbum.Image WHERE Album = ? ORDER BY CreationDate desc";
-		try (PreparedStatement pstatment = connection.prepareStatement(query);) {
-			pstatment.setLong(1, albumId);
-			try (ResultSet result = pstatment.executeQuery();) {
-				while (count < page - 1) {
-					result.next();
-					result.next();
-					result.next();
-					result.next();
-					result.next();
-					count++;
-				}
-				while (result.next() && count < page + 4) {
-					Image image = this.findById(result.getInt("ID"));
-					images.add(image);
-					count++;
-				}
-			}
-		}
-		return images;
-	}
-	
 	public List<Image> findByAlbum(Integer albumId) throws SQLException {
 		List<Image> images = new ArrayList<Image>();
-		String query = "SELECT Image.ID FROM Image INNER JOIN ImageOfAlbum ON Image.ID=ImageOfAlbum.Image WHERE Album = ? ORDER BY CreationDate desc";
+		String query = "SELECT Image.ID FROM Image JOIN ImageOfAlbum ON Image.ID=ImageOfAlbum.Image WHERE Album = ? ORDER BY Position desc";
 	    try (PreparedStatement pstatement = connection.prepareStatement(query);) {
 	        pstatement.setLong(1, albumId);
 	        try (ResultSet result = pstatement.executeQuery();) {

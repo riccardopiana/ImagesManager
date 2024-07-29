@@ -7,8 +7,10 @@ import java.sql.SQLException;
 import java.sql.Statement;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import beans.Album;
+import beans.Image;
 
 public class AlbumDAO {
 	private Connection connection;
@@ -17,7 +19,7 @@ public class AlbumDAO {
 		this.connection = connection;
 	}
 	
-	public void createAlbum(String title, String userEmail, int[] imageIds) throws SQLException {
+	public void createAlbum(String title, String userEmail, List<Image> images) throws SQLException {
 		try {
 			connection.setAutoCommit(false);
 			String query = "";
@@ -33,9 +35,9 @@ public class AlbumDAO {
 			query = "SET @last_album_id = LAST_INSERT_ID()";
 			statement.executeUpdate(query);
 			
-			query = "INSERT ImageOfAlbum (Album, Image) VALUES ";
-			for (int imageId : imageIds) {
-				query += "(@last_album_id, " + imageId + "), ";
+			query = "INSERT ImageOfAlbum (Album, Image, Position, User) VALUES ";
+			for (Image image : images) {
+				query += "(@last_album_id, " + image.getId() + ", '" + image.getCreationDate().toString() + ", '" + userEmail + "), ";
 			}
 			query = query.substring(0, query.length()-2);
 			statement.executeUpdate(query);
@@ -125,5 +127,26 @@ public class AlbumDAO {
 			totalPages = (totalImages/5) + 1;
 		}
 		return totalPages;
+	}
+
+	public void reorderAlbum(Integer albumId, Map<Integer, Image> imagesOrder, String userEmail) throws SQLException{
+		try {
+			connection.setAutoCommit(false);
+			String query = "";
+			for (Integer position : imagesOrder.keySet()) {
+				query = "UPDATE ImageOfAlbum SET position = ? WHERE album = " + albumId + "AND image = ? AND user = " + userEmail;
+				try (PreparedStatement pstatement = connection.prepareStatement(query);) {
+					pstatement.setLong(1, albumId);
+					pstatement.setLong(2, imagesOrder.get(position).getId());
+					pstatement.executeUpdate();
+				}
+			}
+			connection.commit();
+		} catch (SQLException e) {
+			connection.rollback();
+			throw new SQLException();
+		} finally {
+			connection.setAutoCommit(true);
+		}
 	}
 }

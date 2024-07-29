@@ -3,7 +3,7 @@ package controllers;
 import java.io.IOException;
 import java.sql.Connection;
 import java.sql.SQLException;
-import java.util.LinkedList;
+import java.util.ArrayList;
 import java.util.List;
 import java.util.Map;
 
@@ -21,7 +21,7 @@ import dao.*;
 import utils.ConnectionHandler;
 
 @WebServlet("/CreateAlbumJS")
-public class CreateAlbumJS extends HttpServlet {
+public class CreateAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 
@@ -37,32 +37,47 @@ public class CreateAlbumJS extends HttpServlet {
 		}
 		
 		String title = null;
-		List<Integer> idImage=new LinkedList<>();
+		List<Image> images = new ArrayList<>();
+		ImageDAO imageDAO = new ImageDAO(connection);
+		User user = (User) session.getAttribute("user");
 		
 		Map<String, String[]> allMap = request.getParameterMap();
-		//System.out.print("parameters " + allMap.keySet().size());
+		
 		for (String key : allMap.keySet()) {
 			String[] strArr = (String[]) allMap.get(key);
 			for (String val : strArr) { 
 			    if(key.equals("title")) {
-			    	//System.out.println(val + " was the map " + key + " was the key");
-			        title= val;
+			    	
 			     }else if(key.equals("id")) {
-			    	 //System.out.println(val + " was the map " + key + " was the key");
+			    	 Integer id = null;
+			    	 Image image = null;
 			    	 try {
-			        	idImage.add(Integer.parseInt(val));			        	
+			    		 id = Integer.parseInt(val);			        	
 			    	 }catch (NumberFormatException | NullPointerException ex) {
-							response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-							response.getWriter().println("Incorrect or missing param values");
-							return;
+						response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+						response.getWriter().println("Incorrect or missing param values");
+						return;
 					}
+			    	try {
+			    		image = imageDAO.findById(id);
+			    		if (!user.getEmail().equals(image.getUser())) { 
+			    			response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
+							response.getWriter().println("User not allowed");
+							return;
+			    		}
+			    	} catch (Exception e) {
+			    		response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
+						response.getWriter().println("Not possible to recove images");
+						return;
+			    	}
+			    	images.add(image);
 			     }
 			}
 		}
 		
 		try {
 			title = StringEscapeUtils.escapeJava(request.getParameter("title"));
-			if (title == null || title.isEmpty() || idImage.size() <= 0) {
+			if (title == null || title.isEmpty() || images.size() <= 0) {
 				throw new Exception("Missing tile or ids");
 			}
 		} catch (Exception e) {
@@ -71,16 +86,10 @@ public class CreateAlbumJS extends HttpServlet {
 			return;
 		}
 		
-		int[] imageIds = new int[idImage.size()];
-		for (int i = 0; i < idImage.size(); i++) {
-			imageIds[i] = idImage.get(i);
-		}
-		
-		User user = (User) session.getAttribute("user");
 		AlbumDAO albumDAO = new AlbumDAO(connection);
-		
+
 		try {
-			albumDAO.createAlbum(title, user.getEmail(), imageIds);
+			albumDAO.createAlbum(title, user.getEmail(), images);
 			response.setStatus(HttpServletResponse.SC_OK);
 		} catch (SQLException e) {
 			response.setStatus(HttpServletResponse.SC_INTERNAL_SERVER_ERROR);
