@@ -24,6 +24,10 @@ import utils.ConnectionHandler;
 public class CreateAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
+	
+	public CreateAlbum() {
+		super();
+	}
 
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());

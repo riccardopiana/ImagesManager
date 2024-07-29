@@ -6,7 +6,7 @@
 	<display-name>TIW-GestioneDiImmagini</display-name>
 	<context-param>
 		<param-name>dbUrl</param-name>
-		<param-value>jdbc:mysql://localhost:3306/db_gestione_di_immagini?serverTimezone=UTC</param-value>
+		<param-value>jdbc:mysql://localhost:3306/db_gestione_di_immagini_JS?serverTimezone=UTC</param-value>
 	</context-param>
 	<context-param>
 		<param-name>dbUser</param-name>
@@ -25,6 +25,6 @@
 	</welcome-file-list>
 	<context-param>
 		<param-name>uploadLocation</param-name>
-		<param-value>/home/riccardo/OneDrive/University/TECNOLOGIE INFORMATICHE PER IL WEB [Semestre 2]/TIW_Project/Immagini/</param-value>
+		<param-value>/home/riccardo/OneDrive/University/TECNOLOGIE INFORMATICHE PER IL WEB [Semestre 2]/TIW-GestioneDiImmagini-JS/TIW_Project/Immagini/</param-value>
 	</context-param>
 </web-app>

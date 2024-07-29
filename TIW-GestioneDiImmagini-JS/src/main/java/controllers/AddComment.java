@@ -21,15 +21,15 @@ import utils.ConnectionHandler;
 public class AddComment extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
-
-	public void init() throws ServletException {
-		connection = ConnectionHandler.getConnection(getServletContext());
-	}
 	
 	public AddComment() {
 		super();
 	}
 
+	public void init() throws ServletException {
+		connection = ConnectionHandler.getConnection(getServletContext());
+	}
+	
 	protected void doPost(HttpServletRequest request, HttpServletResponse response) throws ServletException, IOException {
 		HttpSession session = request.getSession();
 		if (session.isNew() || session.getAttribute("user") == null) {

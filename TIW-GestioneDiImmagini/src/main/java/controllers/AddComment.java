@@ -21,6 +21,10 @@ import utils.ConnectionHandler;
 public class AddComment extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
+	
+	public AddComment() {
+		super();
+	}
 
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());

@@ -23,6 +23,10 @@ import utils.ConnectionHandler;
 public class ReorderAlbum extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
+	
+	public ReorderAlbum() {
+		super();
+	}
 
 	public void init() throws ServletException {
 		connection = ConnectionHandler.getConnection(getServletContext());

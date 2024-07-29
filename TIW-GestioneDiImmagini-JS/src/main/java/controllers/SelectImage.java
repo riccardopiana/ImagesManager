@@ -23,7 +23,6 @@ public class SelectImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	
-
 	public SelectImage() {
 		super();
 	}

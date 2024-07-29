@@ -29,6 +29,10 @@ public class UploadImage extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private Connection connection = null;
 	String folderPath = "";
+	
+	public UploadImage() {
+		super();
+	}
 
 	public void init() throws ServletException {
 		folderPath = getServletContext().getInitParameter("uploadLocation");

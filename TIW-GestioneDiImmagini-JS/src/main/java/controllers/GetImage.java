@@ -22,6 +22,10 @@ public class GetImage extends HttpServlet {
 	private Connection connection = null;
 	String folderPath = "";
 
+	public GetImage() {
+		super();
+	}
+	
 	public void init() throws ServletException {
 		folderPath = getServletContext().getInitParameter("uploadLocation");
 		connection = ConnectionHandler.getConnection(getServletContext());

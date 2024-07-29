@@ -24,6 +24,10 @@ public class DeleteImage extends HttpServlet {
 	private Connection connection = null;
 
 	String folderPath = "";
+	
+	public DeleteImage() {
+		super();
+	}
 
 	public void init() throws ServletException {
 		folderPath = getServletContext().getInitParameter("uploadLocation");
