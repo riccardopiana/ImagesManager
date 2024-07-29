@@ -204,6 +204,7 @@
 								self.alert.textContent = "You haven't uploaded any image yet!";
 								return;
 							}
+							self.alert.textContent = "";
 							self.update(userImages); // self visible by closure
 
 						} else if (req.status == 403) {
@@ -315,6 +316,26 @@
 			var self = this;
 			this.albumId = albumid;
 			this.reset();
+			
+			makeCall("GET", "GetAlbumInfo?albumId=" + albumid, null,
+				function(req) {
+					if (req.readyState == 4) {
+						var message = req.responseText;
+						if (req.status == 200) {
+							var albumsToShow = JSON.parse(req.responseText);
+							self.albumCreator.textContent = albumsToShow.creator;
+							self.albumTitle.textContent = albumsToShow.title;
+
+						} else if (req.status == 403) {
+							window.location.href = req.getResponseHeader("Location");
+							window.sessionStorage.removeItem('username');
+						} else {
+							self.albumCreator.textContent = "";
+							self.albumTitle.textContent = "";
+						}
+					}
+				});
+			
 			makeCall("GET", "SelectAlbum?albumId=" + albumid, null, function(req) {
 				if (req.readyState == 4) {
 					var message = req.responseText;
@@ -406,25 +427,6 @@
 			} else {
 				this.prev.style.visibility = "hidden";
 			}
-
-			makeCall("GET", "GetAlbumInfo?albumId=" + this.albumId, null,
-				function(req) {
-					if (req.readyState == 4) {
-						var message = req.responseText;
-						if (req.status == 200) {
-							var albumsToShow = JSON.parse(req.responseText);
-							self.albumCreator.textContent = albumsToShow.creator;
-							self.albumTitle.textContent = albumsToShow.title;
-
-						} else if (req.status == 403) {
-							window.location.href = req.getResponseHeader("Location");
-							window.sessionStorage.removeItem('username');
-						} else {
-							self.albumCreator.textContent = "";
-							self.albumTitle.textContent = "";
-						}
-					}
-				});
 		};
 
 

@@ -25,6 +25,6 @@
 	</welcome-file-list>
 	<context-param>
 		<param-name>uploadLocation</param-name>
-		<param-value>/home/riccardo/OneDrive/University/TECNOLOGIE INFORMATICHE PER IL WEB [Semestre 2]/TIW-GestioneDiImmagini-JS/TIW_Project/Immagini/</param-value>
+		<param-value>/home/riccardo/OneDrive/University/TECNOLOGIE INFORMATICHE PER IL WEB [Semestre 2]/TIW_Project/TIW-GestioneDiImmagini-JS/Immagini/</param-value>
 	</context-param>
 </web-app>

@@ -40,7 +40,6 @@ public class ReorderAlbum extends HttpServlet {
 		}
 		
 		Integer albumId = null;
-		Map<Integer, Image> imagesOrder = new HashMap<Integer, Image>();
 		ImageDAO imageDAO = new ImageDAO(connection);
 
 		User user = (User) session.getAttribute("user");
@@ -65,6 +64,10 @@ public class ReorderAlbum extends HttpServlet {
     		return;
 		}
 		
+		Map<Integer, Image> imagesOrder = new HashMap<Integer, Image>();
+		for (Image i : imagesOfAlbum) {
+			imagesOrder.put(imagesOfAlbum.size() - 1 - imagesOfAlbum.indexOf(i), i);
+		}
 		
 		Map<String, String[]> allMap = request.getParameterMap();
 		
