@@ -510,8 +510,6 @@
 					}
 				});
 
-				console.log(imageMap);
-
 				// Costruire la stringa query
 				let query = this.albumId + "&";
 				imageMap.forEach((value, key) => {
@@ -522,7 +520,6 @@
 					query = query.slice(0, -1);
 				}
 
-				console.log(query);
 				
 				var self = this;
 				
@@ -735,7 +732,6 @@
 								window.location.href = req.getResponseHeader("Location");
 								window.sessionStorage.removeItem('username');
 							} else {
-								console.error("Error response:", message);
 								self.alert.textContent = message;
 								self.show();
 							}
@@ -829,9 +825,6 @@
 			document.querySelector("a[href='Logout']").addEventListener('click', () => {
 				window.sessionStorage.removeItem('username');
 			})
-
-
-
 
 			const closeModalButton = document.querySelector('[data-close-button]');
 			closeModalButton.addEventListener('click', () => {
