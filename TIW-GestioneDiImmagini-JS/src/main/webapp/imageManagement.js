@@ -84,7 +84,6 @@
 				linkcell.appendChild(anchor);
 				linkText = document.createTextNode("Show");
 				anchor.appendChild(linkText);
-				//anchor.missionid = mission.id; // make list item clickable
 				anchor.setAttribute('albumid', album.id); // set a custom HTML attribute
 				anchor.addEventListener("click", (e) => {
 					// dependency via module parameter
@@ -100,7 +99,7 @@
 		this.autoclick = function(albumId) {
 			var e = new Event("click");
 			var selector = "a[albumid='" + albumId + "']";
-			var anchorToClick =  // the first mission or the mission with id = missionId
+			var anchorToClick =  // the first album or the album with id = albumId
 				(albumId) ? document.querySelector(selector) : this.listcontainerbody.querySelectorAll("a")[0];
 			if (anchorToClick) anchorToClick.dispatchEvent(e);
 		}
@@ -166,7 +165,6 @@
 				linkcell.appendChild(anchor);
 				linkText = document.createTextNode("Show");
 				anchor.appendChild(linkText);
-				//anchor.missionid = mission.id; // make list item clickable
 				anchor.setAttribute('otheralbumid', album.id); // set a custom HTML attribute
 				anchor.addEventListener("click", (e) => {
 					// dependency via module parameter
@@ -276,7 +274,6 @@
 								window.sessionStorage.removeItem('username');
 							} else {
 								self.alert.textContent = message;
-								self.show();
 							}
 						}
 					});
@@ -468,10 +465,10 @@
 					parent.removeChild(draggableElement);
 
 					if (dropIndex < dragIndex) {
-						// Sposta verso l'alto
+						// Sposta verso sinistra
 						parent.insertBefore(draggableElement, dropzone);
 					} else {
-						// Sposta verso il basso
+						// Sposta verso destra
 						parent.insertBefore(draggableElement, dropzone.nextSibling);
 					}
 				}
@@ -534,6 +531,8 @@
 							window.location.href = req.getResponseHeader("Location");
 							window.sessionStorage.removeItem('username');
 						} else {
+							self.alert.textContent = message; 
+							self.update(imagesAlbum, 0);
 						}
 					}
 				});
@@ -668,7 +667,6 @@
 								window.location.href = req.getResponseHeader("Location");
 								window.sessionStorage.removeItem('username');
 							} else {
-								self.show(self.imageId, self.modal);
 							}
 						}
 					}
@@ -692,7 +690,7 @@
 							window.location.href = req.getResponseHeader("Location");
 							window.sessionStorage.removeItem('username');
 						} else {
-
+							self.commentMessage.textContent = message;
 						}
 					}
 				});

@@ -35,10 +35,8 @@
 
 
 	document.getElementById("signupbutton").addEventListener('click', (e) => {
-		console.log("Sign up");
 		var form = e.target.closest("form");
 		this.email = document.querySelector('input[name=signupEmail]').value;
-		console.log(email);
 		this.validateEmail = email.toLowerCase()
 			.match(
 				/^(([^<>()[\]\\.,;:\s@"]+(\.[^<>()[\]\\.,;:\s@"]+)*)|(".+"))@((\[[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\.[0-9]{1,3}\])|(([a-zA-Z\-0-9]+\.)+[a-zA-Z]{2,}))$/
