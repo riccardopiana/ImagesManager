@@ -731,7 +731,7 @@
 								window.sessionStorage.removeItem('username');
 							} else {
 								self.alert.textContent = message;
-								self.show();
+								//self.show();
 							}
 						}
 					});
