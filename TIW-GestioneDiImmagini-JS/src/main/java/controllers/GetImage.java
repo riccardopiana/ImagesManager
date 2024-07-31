@@ -49,7 +49,6 @@ public class GetImage extends HttpServlet {
 		String filename = URLDecoder.decode(pathInfo.substring(1), "UTF-8");
 
 		File file = new File(folderPath, filename); 
-		System.out.println(folderPath);
 
 		if (!file.exists() || file.isDirectory()) {
 			response.setStatus(HttpServletResponse.SC_NOT_FOUND);
@@ -60,8 +59,6 @@ public class GetImage extends HttpServlet {
 		// set headers for browser
 		response.setHeader("Content-Type", getServletContext().getMimeType(filename));
 		response.setHeader("Content-Length", String.valueOf(file.length()));
-		
-		//TODO: test what happens  if you change inline by  attachment
 		response.setHeader("Content-Disposition", "inline; filename=\"" + file.getName() + "\"");
 																									
 		// copy file to output stream
