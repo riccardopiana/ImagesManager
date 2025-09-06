@@ -2,7 +2,7 @@
 
 ### What is this?
 
-This is one of my web development projects created during my studies at the Politecnico di Milano with my classmate Christian Prendin. The project demonstrates web programming concepts, utilizing both front-end and back-end technologies to build a functional web application.
+This is one of my web development projects created during my studies at the Politecnico di Milano with my classmate Christian Prendin for the course "Tecnologie Informatiche per il Web". The project demonstrates web programming concepts, utilizing both front-end and back-end technologies to build a functional web application.
 The objective of the project is the implementation of a **web application** in two distinct versions:
 * *pureHTML* : a thin client application connected to a **JAVA** server that communicates with an **SQL** database. The combination of **HTML+Thymeleaf+CSS** is used for the web pages
 * *RIA* (Rich Internet Application) : a thick client application using **JavaScript(JS)** connected to a **JAVA** server that communicates with an **SQL** database. The web pages are managed client-side with a combination of **HTML+JavaScript(JS)+CSS**
